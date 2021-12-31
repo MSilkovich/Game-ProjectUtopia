@@ -227,16 +227,89 @@ def gradientRect( window, left_colour, right_colour, target_rect ):
     window.blit( colour_rect, target_rect )                                    # paint it
 
 
+def show_info(coords, screen):
+    x = coords[0]
+    y = coords[1]
+    coords = 75
+    if x >= 20 and x <= 70 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (70, 70, 450, 200))
+        info = ["Пища - сновной ресурс для выживания вашего города.",
+                "Количество пищи влияет на численность населения и",
+                "его состояние. Пища используется для найма армии,",
+                "строительства, развития науки и культуры."]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 75
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 220 and x <= 270 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (270, 70, 450, 200))
+        info = ["Древесина - основной строительный материал вашего",
+                "города, из древесины строятся основные экономические",
+                "здания. Древесину можно добыть в лесах."]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 275
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    else:
+        pygame.draw.rect(screen, (0, 0, 0), (70, 70, 1200, 900))
+
+
 start_screen()
 # pole = Board(19, 9, cell_size=100)
 size = WIDTH, HEIGHT = 1920, 900
 screen = pygame.display.set_mode(size)
 # os.environ['SDL_VIDEO_CENTERED'] = '1'
+resourses = []
+food = 600
+wood = 400
+stone = 200
+gold = 0
+science = 0
+culture = 0
+resourses.append(load_image('food.png'))
+resourses.append(load_image('wood.png'))
+resourses.append(load_image('stone.png'))
+resourses.append(load_image('gold.png'))
+resourses.append(load_image('science.png'))
+resourses.append(load_image('culture.png'))
 running = True
+y = 20
+v = 20
 while running:
+    x = 20
+    res_values = [str(food)[0:3], str(wood), str(stone), str(gold), str(science), str(culture)]
+    coords = 80
+    font = pygame.font.SysFont('arial', 40)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
+        if event.type == pygame.MOUSEMOTION:
+            show_info(event.pos, screen)
     # pole.render(screen)
+    for i in resourses:
+        screen.blit(i, (x, y))
+        pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 200, 50), 1)
+        pygame.draw.rect(screen, (47, 27, 0), (x + 51, y + 1, 198, 48), 1)
+        pygame.draw.rect(screen, (103, 0, 0), (x + 52, y + 2, 196, 46))
+        x += 200
+    for i in res_values:
+        string_rendered = font.render(i, 1, (255, 255, 255))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.top = 20
+        intro_rect.x = coords
+        coords += 160
+        coords += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
     pygame.display.flip()
+    food += v * clock.tick() / 2000
     clock.tick(FPS)
