@@ -159,7 +159,7 @@ def terminate():
 def start_screen():
     intro_text = ['Проект утопия']
 
-    fon = pygame.transform.scale((0, 0, 0), (WIDTH, HEIGHT)) #заменить (0, 0, 0) на 'fon.png'
+    fon = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT)) #заменить (0, 0, 0) на 'fon.png'
     screen.blit(fon, (0, 0))
     pygame.font.get_fonts()
     font = pygame.font.SysFont('arial', 80)
