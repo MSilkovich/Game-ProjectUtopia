@@ -372,12 +372,12 @@ def show_info(coords, screen):
             coords += intro_rect.height
             screen.blit(string_rendered, intro_rect)
     else:
-        pygame.draw.rect(screen, (0, 0, 0), (0, 0, 1920, 1200))
+        screen.blit(fon, (0, 0))
 
 
 start_screen()
 # pole = Board(19, 9, cell_size=100)
-size = WIDTH, HEIGHT = 1920, 1200
+size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size)
 # os.environ['SDL_VIDEO_CENTERED'] = '1'
 resourses = []
@@ -401,13 +401,15 @@ resourses.append(load_image('culture.png'))
 resourses.append(load_image('population.png'))
 resourses.append(load_image('diseases .png'))
 resourses.append(load_image('happiness .png'))
+fon = load_image('fon1.jpg')
 running = True
 y = 20
 v = 20
 while running:
     x = 0
-    res_values = [str(food)[0:3], str(wood), str(stone), str(iron), str(gold), str(science), str(culture),
-                  str(population), str(diseases), str(happiness) + '%']
+    res_values = [str(food)[0:3], str(wood)[0:3], str(stone)[0:3], str(iron)[0:3], str(gold)[0:3],
+                  str(science)[0:3], str(culture)[0:3],
+                  str(population)[0:3], str(diseases)[0:3], str(happiness) + '%']
     coords = 80
     font = pygame.font.SysFont('arial', 40)
     for event in pygame.event.get():
@@ -418,7 +420,7 @@ while running:
     # pole.render(screen)
     for i in resourses:
         screen.blit(i, (x, y))
-        pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 200, 50), 1)
+        pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 150, 50), 1)
         pygame.draw.rect(screen, (47, 27, 0), (x + 51, y + 1, 198, 48), 1)
         pygame.draw.rect(screen, (103, 0, 0), (x + 52, y + 2, 196, 46))
         x += 200
