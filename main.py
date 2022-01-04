@@ -159,7 +159,7 @@ def terminate():
 def start_screen():
     intro_text = ['Проект утопия']
 
-    fon = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT)) #заменить (0, 0, 0) на 'fon.png'
+    fon = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     pygame.font.get_fonts()
     font = pygame.font.SysFont('arial', 80)
@@ -231,8 +231,8 @@ def show_info(coords, screen):
     x = coords[0]
     y = coords[1]
     coords = 75
-    if x >= 20 and x <= 70 and y >= 20 and y <= 70:
-        pygame.draw.rect(screen, (103, 0, 0), (70, 70, 450, 200))
+    if x >= 0 and x <= 50 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (50, 70, 450, 200))
         info = ["Пища - сновной ресурс для выживания вашего города.",
                 "Количество пищи влияет на численность населения и",
                 "его состояние. Пища используется для найма армии,",
@@ -242,12 +242,12 @@ def show_info(coords, screen):
             string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
-            intro_rect.x = 75
+            intro_rect.x = 55
             coords += 20
             coords += intro_rect.height
             screen.blit(string_rendered, intro_rect)
-    elif x >= 220 and x <= 270 and y >= 20 and y <= 70:
-        pygame.draw.rect(screen, (103, 0, 0), (270, 70, 450, 200))
+    elif x >= 200 and x <= 250 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (250, 70, 450, 150))
         info = ["Древесина - основной строительный материал вашего",
                 "города, из древесины строятся основные экономические",
                 "здания. Древесину можно добыть в лесах."]
@@ -256,17 +256,128 @@ def show_info(coords, screen):
             string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
-            intro_rect.x = 275
+            intro_rect.x = 255
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 400 and x <= 450 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (450, 70, 450, 150))
+        info = ["Камень - строительный ресурс для некоторых сооружений",
+                "и улучшения стен в поздней игре. Добывается в каменных",
+                "залежах с пристроенным карьером."]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 455
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 600 and x <= 650 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (650, 70, 450, 150))
+        info = ["Железо - полезный стратегический ресурс. Используется",
+                "для тренировки сильных войск. Добывается в железных",
+                "жилах с пристроеным рудником"]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 655
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 800 and x <= 850 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (850, 70, 450, 200))
+        info = ["Зололто - используется для найма проф армии, для",
+                "развития науки и культуры и для постройки некоторых",
+                "зданий. Добывается в золотых жилах с пристроенным",
+                "рудником."]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 855
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 1000 and x <= 1050 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (1050, 70, 450, 100))
+        info = ["Наука - изучайте улучшения, получайте бонусы.",
+                "Увеличивается специальными постройками."]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 1055
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 1200 and x <= 1250 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (1250, 70, 470, 150))
+        info = ["Культура и вера - получайте длоходы с мероприятий,",
+                "повышайте счастье народа. Увеличиваются специальными",
+                "постройками."]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 1255
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 1400 and x <= 1450 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (1450, 70, 475, 150))
+        info = ["Население - главный фактор вашего города, из них",
+                "набирается армия, оно добывает ресурсы. Повышается от",
+                "избытка пищи и счастья."]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 1455
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 1600 and x <= 1650 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (1125, 70, 475, 100))
+        info = ["Болезни - влияют на смертность. Могут появится",
+                "в ходе случайного события"]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 1130
+            coords += 20
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+    elif x >= 1800 and x <= 1850 and y >= 20 and y <= 70:
+        pygame.draw.rect(screen, (103, 0, 0), (1325, 70, 475, 150))
+        info = ["Счастье - влияет на добычу ресурсов, возникновение",
+                "восстаний и количество населения. Увеличивается",
+                "количеством ресурсов и постройкой культурных зданий."]
+        font = pygame.font.SysFont('arial', 20)
+        for i in info:
+            string_rendered = font.render(i, 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = coords
+            intro_rect.x = 1330
             coords += 20
             coords += intro_rect.height
             screen.blit(string_rendered, intro_rect)
     else:
-        pygame.draw.rect(screen, (0, 0, 0), (70, 70, 1200, 900))
+        screen.blit(fon, (0, 0))
 
 
 start_screen()
 # pole = Board(19, 9, cell_size=100)
-size = WIDTH, HEIGHT = 1920, 900
+size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size)
 # os.environ['SDL_VIDEO_CENTERED'] = '1'
 resourses = []
@@ -274,20 +385,31 @@ food = 600
 wood = 400
 stone = 200
 gold = 0
+iron = 0
 science = 0
 culture = 0
+population = 1000
+diseases = 0
+happiness = 60
 resourses.append(load_image('food.png'))
 resourses.append(load_image('wood.png'))
 resourses.append(load_image('stone.png'))
 resourses.append(load_image('gold.png'))
+resourses.append(load_image('iron.png'))
 resourses.append(load_image('science.png'))
 resourses.append(load_image('culture.png'))
+resourses.append(load_image('population.png'))
+resourses.append(load_image('diseases .png'))
+resourses.append(load_image('happiness .png'))
+fon = load_image('fon1.jpg')
 running = True
 y = 20
 v = 20
 while running:
-    x = 20
-    res_values = [str(food)[0:3], str(wood), str(stone), str(gold), str(science), str(culture)]
+    x = 0
+    res_values = [str(food)[0:3], str(wood)[0:3], str(stone)[0:3], str(iron)[0:3], str(gold)[0:3],
+                  str(science)[0:3], str(culture)[0:3],
+                  str(population)[0:3], str(diseases)[0:3], str(happiness) + '%']
     coords = 80
     font = pygame.font.SysFont('arial', 40)
     for event in pygame.event.get():
@@ -298,7 +420,7 @@ while running:
     # pole.render(screen)
     for i in resourses:
         screen.blit(i, (x, y))
-        pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 200, 50), 1)
+        pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 150, 50), 1)
         pygame.draw.rect(screen, (47, 27, 0), (x + 51, y + 1, 198, 48), 1)
         pygame.draw.rect(screen, (103, 0, 0), (x + 52, y + 2, 196, 46))
         x += 200
@@ -307,7 +429,7 @@ while running:
         intro_rect = string_rendered.get_rect()
         intro_rect.top = 20
         intro_rect.x = coords
-        coords += 160
+        coords += 152
         coords += intro_rect.height
         screen.blit(string_rendered, intro_rect)
     pygame.display.flip()
