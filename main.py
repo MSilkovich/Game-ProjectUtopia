@@ -380,7 +380,7 @@ start_screen()
 size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size)
 # os.environ['SDL_VIDEO_CENTERED'] = '1'
-food, wood, stone, gold, iron, science, culture, population, diseases, happiness, resources = 600, 400, 200, 0, 0, 0, 0, 1000, 0, 60, []
+food, wood, stone, gold, iron, science, culture, population, diseases, happiness, resourses = 600, 400, 200, 0, 0, 0, 0, 1000, 0, 60, []
 resourses.append(load_image('food.png'))
 resourses.append(load_image('wood.png'))
 resourses.append(load_image('stone.png'))
