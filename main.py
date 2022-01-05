@@ -418,7 +418,7 @@ def show_info(coords, screen):
 
 
 start_screen()
-pole = Board(19, 10, cell_size=100, top=60)
+# pole = Board(19, 10, cell_size=100, top=60)
 size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 resourses = []
@@ -465,7 +465,7 @@ while running:
         coords += 152
         coords += intro_rect.height
         screen.blit(string_rendered, intro_rect)
-    pole.render(screen)
+#     pole.render(screen)
     pygame.display.flip()
     food += v * clock.tick() / 2000
     clock.tick(FPS)
