@@ -2,7 +2,7 @@ import pygame
 import os
 import sys
 from startScr import start_screen
-
+from settings import TILE_SIZE
 
 pygame.init()
 clock = pygame.time.Clock()
