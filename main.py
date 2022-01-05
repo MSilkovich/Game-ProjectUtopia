@@ -26,7 +26,7 @@ def terminate():
     sys.exit()
 
 class Board:
-    def __init__(self, width, height, grid_length_x=18, grid_length_y=18, left=10, top=10):
+    def __init__(self, width, height, grid_length_x=20, grid_length_y=20, left=10, top=10):
         self.grid_length_x = grid_length_x
         self.grid_length_y = grid_length_y
         self.width = width
@@ -36,40 +36,26 @@ class Board:
         self.top = top
         self.cell_size = 30
         self.world = self.create_world()
+        self.temp_tile = None
+
+    def update(self):
+        mouse_pos = pygame.mouse.get_pos()
+        self.grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1])
+        print(self.grid_pos)
+        try:
+            iso_poly = self.world[self.grid_pos[0]][self.grid_pos[1]]["iso_poly"]
+            self.temp_tile = {
+                "iso_poly": iso_poly
+            }
+        except IndexError:
+                pass
 
     def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
         self.cell_size = cell_size
 
-    def render(self, screen):
-        for y in range(self.height):
-            for x in range(self.width):
-                pygame.draw.rect(screen, (255, 255, 255), (self.left + x * self.cell_size,
-                                                           self.top + y * self.cell_size,
-                                                           self.cell_size, self.cell_size), 1)
-
-    def mouse_in(self, mous_pos):
-        x, y = mous_pos
-        px, py = self.position
-        if x > px and x < px + self.width:
-            if y > py and y < py + self.heigth:
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def get_cell(self, mouse_pos):
-        print(mouse_pos)
-        x = (mouse_pos[0] - self.left) // self.cell_size
-        y = (mouse_pos[1] - self.top) // self.cell_size
-        if x < 0 or x >= self.width or y < 0 or y >= self.height:
-            return None
-        else:
-            return x, y
-        
-     def create_world(self):
+    def create_world(self):
         world = []
 
         for grid_x in range(self.grid_length_x):
@@ -91,10 +77,17 @@ class Board:
 
         iso_poly = [self.cart_to_iso(x, y) for x, y in rect]
 
+        minx = min([x for x, y in iso_poly])
+        miny = min([y for x, y in iso_poly])
+
+        tile = ""
+
         out = {
             "grid": [grid_x, grid_y],
             "cart_rect": rect,
-            "iso_poly": iso_poly
+            "iso_poly": iso_poly,
+            "render_pos": [minx, miny],
+            "tile": tile
         }
 
         return out
@@ -104,21 +97,35 @@ class Board:
         iso_y = (x + y) / 2 - 320
         return iso_x, iso_y
 
-    def get_click(self, mouse_pos):
-        cell = self.get_cell(mouse_pos)
-        self.on_click(cell)
+    def mouse_to_grid(self, x, y):
+        # transform to world position
+        world_x = x
+        world_y = y
+        # transform to cart
+        cart_y = (2 * world_y - world_x) / 2
+        cart_x = cart_y + world_x
+        # transform to grid coordinates
+        grid_x = int(cart_x // TILE_SIZE)
+        grid_y = int(cart_y // TILE_SIZE)
+        return grid_x, grid_y
 
-    def on_click(self, cell):
-        if cell != None:
-            x, y = cell
-            try:
-                if self.board[y - 1][x - 1] == 1:
-                    self.board[y - 1][x - 1] = 0
-                else:
-                    self.board[y - 1][x - 1] = 1
-                print(cell)
-            except IndexError:
-                print(None)
+    def draw(self, screen):
+        for x in range(self.grid_length_x):
+            for y in range(self.grid_length_y):
+
+                p = self.world[x][y]["iso_poly"]
+                p = [(x + self.width / 2, y + self.height / 4) for x, y in p]
+                # pygame.draw.polygon(screen, (255, 0, 0), p, 1) # drawing grid
+
+        if self.temp_tile is not None:
+            iso_poly = self.temp_tile["iso_poly"]
+            print(iso_poly)
+            iso_poly1 = [(x - 990, y + 305) for x, y in iso_poly] # left_side
+            iso_poly = [(x + 1010, y - 695) for x, y in iso_poly] # right_side
+            if self.grid_pos[1] <= -1:
+                pygame.draw.polygon(screen, (255, 255, 255), iso_poly, 3)
+            elif self.grid_pos[1] >= 0:
+                pygame.draw.polygon(screen, (255, 255, 255), iso_poly1, 3)
 
 
 def gradientRect( window, left_colour, right_colour, target_rect ):
@@ -403,18 +410,12 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     else:
         screen.blit(fon, (0, 0))
-        
+
         global board
         board = Board(20, 20)
         board.set_view(0, 0, 100)
-        # board.render(screen)
-
-        for x in range(board.grid_length_x):
-            for y in range(board.grid_length_y):
-
-                p = board.world[x][y]["iso_poly"]
-                p = [(x + board.width / 2, y + board.height / 4) for x, y in p]
-                pygame.draw.polygon(screen, (255, 0, 0), p, 1)
+        board.update()
+        board.draw(screen)
 
 
 start_screen()
@@ -450,6 +451,9 @@ while running:
             terminate()
         if event.type == pygame.MOUSEMOTION:
             show_info(event.pos, screen)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                terminate()
     # pole.render(screen)
     for i in resourses:
         screen.blit(i, (x, y))
@@ -465,7 +469,6 @@ while running:
         coords += 152
         coords += intro_rect.height
         screen.blit(string_rendered, intro_rect)
-#     pole.render(screen)
     pygame.display.flip()
     food += v * clock.tick() / 2000
     clock.tick(FPS)
