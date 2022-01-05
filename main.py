@@ -26,13 +26,16 @@ def terminate():
     sys.exit()
 
 class Board:
-    def __init__(self, width, height, left=10, top=10, cell_size=30):
+    def __init__(self, width, height, grid_length_x=18, grid_length_y=18, left=10, top=10):
+        self.grid_length_x = grid_length_x
+        self.grid_length_y = grid_length_y
         self.width = width
         self.height = height
-        self.board = [[0] * (width + 1) for i in range(height + 1)]
+        self.board = [[0] * width for _ in range(height)]
         self.left = left
         self.top = top
-        self.cell_size = cell_size
+        self.cell_size = 30
+        self.world = self.create_world()
 
     def set_view(self, left, top, cell_size):
         self.left = left
@@ -65,6 +68,57 @@ class Board:
             return None
         else:
             return x, y
+        
+     def create_world(self):
+        world = []
+
+        for grid_x in range(self.grid_length_x):
+            world.append([])
+            for grid_y in range(self.grid_length_y):
+                world_tile = self.grid_to_world(grid_x, grid_y)
+                world[grid_x].append(world_tile)
+
+        return world
+
+    def grid_to_world(self, grid_x, grid_y):
+
+        rect = [
+            (grid_x * TILE_SIZE, grid_y * TILE_SIZE),
+            (grid_x * TILE_SIZE + TILE_SIZE, grid_y * TILE_SIZE),
+            (grid_x * TILE_SIZE + TILE_SIZE, grid_y * TILE_SIZE + TILE_SIZE),
+            (grid_x * TILE_SIZE, grid_y * TILE_SIZE + TILE_SIZE)
+        ]
+
+        iso_poly = [self.cart_to_iso(x, y) for x, y in rect]
+
+        out = {
+            "grid": [grid_x, grid_y],
+            "cart_rect": rect,
+            "iso_poly": iso_poly
+        }
+
+        return out
+
+    def cart_to_iso(self, x, y):
+        iso_x = x - y + 1000
+        iso_y = (x + y) / 2 - 320
+        return iso_x, iso_y
+
+    def get_click(self, mouse_pos):
+        cell = self.get_cell(mouse_pos)
+        self.on_click(cell)
+
+    def on_click(self, cell):
+        if cell != None:
+            x, y = cell
+            try:
+                if self.board[y - 1][x - 1] == 1:
+                    self.board[y - 1][x - 1] = 0
+                else:
+                    self.board[y - 1][x - 1] = 1
+                print(cell)
+            except IndexError:
+                print(None)
 
 
 def gradientRect( window, left_colour, right_colour, target_rect ):
@@ -349,6 +403,18 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     else:
         screen.blit(fon, (0, 0))
+        
+        global board
+        board = Board(20, 20)
+        board.set_view(0, 0, 100)
+        # board.render(screen)
+
+        for x in range(board.grid_length_x):
+            for y in range(board.grid_length_y):
+
+                p = board.world[x][y]["iso_poly"]
+                p = [(x + board.width / 2, y + board.height / 4) for x, y in p]
+                pygame.draw.polygon(screen, (255, 0, 0), p, 1)
 
 
 start_screen()
