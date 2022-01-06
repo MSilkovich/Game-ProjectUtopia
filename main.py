@@ -2,7 +2,9 @@ import pygame
 import os
 import sys
 from startScreen import start_screen
-from Board import Board 
+from Board import Board
+from Castle import Castle
+
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -25,13 +27,16 @@ def terminate():
     pygame.quit()
     sys.exit()
 
+def update_bg():
+    screen.blit(fon, (0, 0))
 
-def gradientRect( window, left_colour, right_colour, target_rect ):
-    colour_rect = pygame.Surface( ( 2, 2 ) )                                   # tiny! 2x2 bitmap
-    pygame.draw.line( colour_rect, left_colour,  ( 0,0 ), ( 0,1 ) )            # left colour line
-    pygame.draw.line( colour_rect, right_colour, ( 1,0 ), ( 1,1 ) )            # right colour line
-    colour_rect = pygame.transform.smoothscale( colour_rect, ( target_rect.width, target_rect.height ) )  # stretch!
-    window.blit( colour_rect, target_rect )                                    # paint it
+
+def gradientRect(window, left_colour, right_colour, target_rect):
+    colour_rect = pygame.Surface((2, 2))  # tiny! 2x2 bitmap
+    pygame.draw.line(colour_rect, left_colour, (0, 0), (0, 1))  # left colour line
+    pygame.draw.line(colour_rect, right_colour, (1, 0), (1, 1))  # right colour line
+    colour_rect = pygame.transform.smoothscale(colour_rect, (target_rect.width, target_rect.height))  # stretch!
+    window.blit(colour_rect, target_rect)  # paint it
 
 
 def show_info(coords, screen):
@@ -154,7 +159,7 @@ def show_info(coords, screen):
     elif x >= 800 and x <= 850 and y >= 10 and y <= 60:
         screen.blit(fon, (0, 0))
         pygame.draw.rect(screen, (103, 0, 0), (850, 60, 450, 200))
-        info = ["Зололто - используется для найма проф армии, для",
+        info = ["Золото - используется для найма проф армии, для",
                 "развития науки и культуры и для постройки некоторых",
                 "зданий. Добывается в золотых жилах с пристроенным",
                 "рудником."]
@@ -308,7 +313,6 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     else:
         screen.blit(fon, (0, 0))
-
         global board
         board = Board(20, 20)
         board.set_view(0, 0, 100)
@@ -316,11 +320,14 @@ def show_info(coords, screen):
         board.draw(screen)
 
 
+castle_sprites = pygame.sprite.Group()
+castle = Castle(960, 650)
+castle_sprites.add(castle)
+
 start_screen()
-# pole = Board(19, 10, cell_size=100, top=60)
 size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-resourses = []
+resourses, buildings = [], []
 food, wood, stone, iron, gold, science, culture, population, happiness, diseases = \
     600, 400, 200, 0, 0, 0, 0, 1000, 60, 0
 resourses.append(load_image('food.png'))
@@ -344,7 +351,6 @@ while running:
     coords = 80
     font = pygame.font.SysFont('arial', 40)
     for event in pygame.event.get():
-        print(pygame.K_BACKSPACE)
         if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
             terminate()
         if event.type == pygame.MOUSEMOTION:
@@ -352,7 +358,6 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 terminate()
-    # pole.render(screen)
     for i in resourses:
         screen.blit(i, (x, y))
         pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 150, 50), 1)
@@ -360,13 +365,15 @@ while running:
         pygame.draw.rect(screen, (103, 0, 0), (x + 52, y + 2, 196, 46))
         x += 200
     for i in res_values:
-        string_rendered = font.render(i, 1, (255, 255, 255))
+        string_rendered = font.render(i, True, (255, 255, 255))
         intro_rect = string_rendered.get_rect()
         intro_rect.top = 10
         intro_rect.x = coords
         coords += 152
         coords += intro_rect.height
         screen.blit(string_rendered, intro_rect)
+    castle.update()
+    castle_sprites.draw(screen)
     pygame.display.flip()
     food += v * clock.tick() / 2000
     clock.tick(FPS)
