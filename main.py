@@ -119,7 +119,6 @@ class Board:
 
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
-            print(iso_poly)
             # первая координата - нижний угол, вторая - правый угол, третья - верхний угол, четвертая - левый угол
             iso_poly1 = [(x - 990, y + 305) for x, y in iso_poly] # left_side
             iso_poly = [(x + 1010, y - 695) for x, y in iso_poly] # right_side
