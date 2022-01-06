@@ -109,7 +109,7 @@ class Board:
         grid_y = int(cart_y // TILE_SIZE)
         return grid_x, grid_y
 
-    def draw(self, screen):
+        def draw(self, screen):
         for x in range(self.grid_length_x):
             for y in range(self.grid_length_y):
 
@@ -119,13 +119,99 @@ class Board:
 
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
-            # первая координата - нижний угол, вторая - правый угол, третья - верхний угол, четвертая - левый угол
-            iso_poly1 = [(x - 990, y + 305) for x, y in iso_poly] # left_side
-            iso_poly = [(x + 1010, y - 695) for x, y in iso_poly] # right_side
+            iso_poly1 = [(x - 990, y + 305) for x, y in iso_poly] # left_side первая координата - нижний угол, вторая - правый угол, третья - верхний угол, четвертая - левый угол
+            iso_poly2 = [(x + 1010, y - 695) for x, y in iso_poly] # right_side первая координата - нижний угол, вторая - правый угол, третья - верхний угол, четвертая - левый угол
             if self.grid_pos[1] <= -1:
-                pygame.draw.polygon(screen, (255, 255, 255), iso_poly, 3)
+                if self.grid_pos[0] == 19 and self.grid_pos[1] <= -1:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 18 and self.grid_pos[1] <= -1:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 17 and self.grid_pos[1] <= -2:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 16 and self.grid_pos[1] <= -3:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 15 and self.grid_pos[1] <= -4:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 14 and self.grid_pos[1] <= -5:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 13 and self.grid_pos[1] <= -6:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 12 and self.grid_pos[1] <= -7:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 11 and self.grid_pos[1] <= -8:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 10 and self.grid_pos[1] <= -9:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 9 and self.grid_pos[1] <= -8:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 8 and self.grid_pos[1] <= -7:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 7 and self.grid_pos[1] <= -6:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 6 and self.grid_pos[1] <= -5:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 5 and self.grid_pos[1] <= -4:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 4 and self.grid_pos[1] <= -3:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 3 and self.grid_pos[1] <= -2:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 2 and self.grid_pos[1] <= -1:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 1 and self.grid_pos[1] <= -1:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                elif self.grid_pos[0] == 0 and self.grid_pos[1] <= -1:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                else:
+                    pygame.draw.polygon(screen, (255, 255, 255), iso_poly2, 3)
+                    
             elif self.grid_pos[1] >= 0:
-                pygame.draw.polygon(screen, (255, 255, 255), iso_poly1, 3)
+                if self.grid_pos[0] == 20 and self.grid_pos[1] <= 1:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 19 and self.grid_pos[1] == 0:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 19 and self.grid_pos[1] == 2:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 18 and self.grid_pos[1] <= 3 and self.grid_pos[1] > 1:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 17 and self.grid_pos[1] == 4:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 16 and self.grid_pos[1] == 5:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 15 and self.grid_pos[1] == 6:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 14 and self.grid_pos[1] == 7:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 13 and self.grid_pos[1] == 8:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 12 and self.grid_pos[1] == 9:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 11 and self.grid_pos[1] == 10:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 10 and self.grid_pos[1] == 10:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 9 and self.grid_pos[1] >= 8:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 8 and self.grid_pos[1] == 8:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 7 and self.grid_pos[1] == 7:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 6 and self.grid_pos[1] == 6:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 5 and self.grid_pos[1] == 5:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 4 and self.grid_pos[1] == 4:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 3 and self.grid_pos[1] == 3:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 2 and self.grid_pos[1] == 2:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 1 and self.grid_pos[1] <= 1:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                elif self.grid_pos[0] == 0 and self.grid_pos[1] == 0:
+                    pygame.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                else:
+                    pygame.draw.polygon(screen, (255, 255, 255), iso_poly1, 3)
 
 
 def gradientRect( window, left_colour, right_colour, target_rect ):
