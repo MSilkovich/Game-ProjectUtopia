@@ -3,7 +3,9 @@ import os
 import sys
 from startScreen import start_screen
 from Board import Board
-from Castle import Castle
+from Buildings import Castle_cl
+from Buildings import Farm
+from CONSTS import MYEVENTTYPE_farm, MYEVENTTYPE_castle
 
 
 pygame.init()
@@ -312,18 +314,19 @@ def show_info(coords, screen):
             coords += intro_rect.height
             screen.blit(string_rendered, intro_rect)
     else:
-        screen.blit(fon, (0, 0))
         global board
         board = Board(20, 20)
-        board.set_view(0, 0, 100)
         board.update()
         board.draw(screen)
 
 
 castle_sprites = pygame.sprite.Group()
-castle = Castle(960, 650)
-castle_sprites.add(castle)
+farm_sprites = pygame.sprite.Group()
+# castle = Castle(960, 650)
+# castle_sprites.add(castle)
 
+castle = Castle_cl(load_image('castle/castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
+pygame.time.set_timer(MYEVENTTYPE_castle, 1000)
 start_screen()
 size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
@@ -344,6 +347,8 @@ running = True
 y = 10
 v = 20
 while running:
+    screen.blit(fon, (0, 0))
+    show_info(pygame.mouse.get_pos(), screen)
     x = 0
     res_values = [str(food)[0:3], str(wood)[0:3], str(stone)[0:3], str(iron)[0:3], str(gold)[0:3],
                   str(science)[0:3], str(culture)[0:3],
@@ -353,11 +358,30 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
             terminate()
-        if event.type == pygame.MOUSEMOTION:
-            show_info(event.pos, screen)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 terminate()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if board.grid_pos[1] >= 0:
+                farmcord = board.iso_poly1[3]
+            elif board.grid_pos[1] < 0:
+                farmcord = board.iso_poly2[3]
+            x1 = farmcord[0] + 65
+            y1 = farmcord[1]
+            y1 -= 50
+            farm = Farm(load_image('farm.png'), 3, 1, x1, y1, farm_sprites)
+            pygame.time.set_timer(MYEVENTTYPE_farm, 3000)
+        if event.type == MYEVENTTYPE_farm:
+            if farm.n < 2:
+                farm.update()
+                pygame.time.set_timer(MYEVENTTYPE_farm, 3000)
+        if event.type == MYEVENTTYPE_castle:
+            castle.update()
+            pygame.time.set_timer(MYEVENTTYPE_castle, 1000)
+
+    castle_sprites.draw(screen)
+    farm_sprites.draw(screen)
+
     for i in resourses:
         screen.blit(i, (x, y))
         pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 150, 50), 1)
@@ -372,8 +396,6 @@ while running:
         coords += 152
         coords += intro_rect.height
         screen.blit(string_rendered, intro_rect)
-    castle.update()
-    castle_sprites.draw(screen)
     pygame.display.flip()
     food += v * clock.tick() / 2000
     clock.tick(FPS)
