@@ -5,7 +5,7 @@ from startScreen import start_screen
 from Board import Board
 from Buildings import Castle_cl
 from Buildings import Farm
-from CONSTS import MYEVENTTYPE_farm, MYEVENTTYPE_castle
+from SETTINGS import MYEVENTTYPE_farm, MYEVENTTYPE_castle
 
 
 pygame.init()
