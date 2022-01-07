@@ -369,7 +369,7 @@ while running:
             x1 = farmcord[0] + 65
             y1 = farmcord[1]
             y1 -= 50
-            farm = Farm(load_image('farm.png'), 3, 1, x1, y1, farm_sprites)
+            farm = Farm(load_image('farm_2.png'), 3, 1, x1, y1, farm_sprites)
             pygame.time.set_timer(MYEVENTTYPE_farm, 3000)
         if event.type == MYEVENTTYPE_farm:
             if farm.n < 2:
