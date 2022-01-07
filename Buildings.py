@@ -1,5 +1,5 @@
 import pygame as pg
-from CONSTS import MYEVENTTYPE_farm
+from SETTINGS import MYEVENTTYPE_farm
 
 
 class Castle_cl(pg.sprite.Sprite):
