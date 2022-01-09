@@ -14,6 +14,9 @@ class Board:
         self.cell_size = 30
         self.world = self.create_world()
         self.temp_tile = None
+        self.grid_pos = (0, 0)
+        self.iso_poly1 = [(0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0)]
+        self.iso_poly2 = [(0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0), (0, 0, 0, 0)]
 
     def update(self):
         mouse_pos = pg.mouse.get_pos()
