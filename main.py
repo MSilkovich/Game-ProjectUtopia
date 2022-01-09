@@ -1,18 +1,17 @@
 import pygame
 import os
 import sys
-from startScreen import start_screen
+from startScr import start_screen
 from Board import Board
-from Buildings import Castle_cl
-from Buildings import Farm
-from SETTINGS import MYEVENTTYPE_farm, MYEVENTTYPE_castle
-
+from Buildings import Farm, Castle_cl
 
 pygame.init()
 clock = pygame.time.Clock()
 start = True
 n = 0
-
+all_sprites = pygame.sprite.Group()
+castle_sprites = pygame.sprite.Group()
+farm_sprites = pygame.sprite.Group()
 FPS = 50
 
 
@@ -29,16 +28,13 @@ def terminate():
     pygame.quit()
     sys.exit()
 
-def update_bg():
-    screen.blit(fon, (0, 0))
 
-
-def gradientRect(window, left_colour, right_colour, target_rect):
-    colour_rect = pygame.Surface((2, 2))  # tiny! 2x2 bitmap
-    pygame.draw.line(colour_rect, left_colour, (0, 0), (0, 1))  # left colour line
-    pygame.draw.line(colour_rect, right_colour, (1, 0), (1, 1))  # right colour line
-    colour_rect = pygame.transform.smoothscale(colour_rect, (target_rect.width, target_rect.height))  # stretch!
-    window.blit(colour_rect, target_rect)  # paint it
+def gradientRect( window, left_colour, right_colour, target_rect ):
+    colour_rect = pygame.Surface( ( 2, 2 ) )                                   # tiny! 2x2 bitmap
+    pygame.draw.line( colour_rect, left_colour,  ( 0,0 ), ( 0,1 ) )            # left colour line
+    pygame.draw.line( colour_rect, right_colour, ( 1,0 ), ( 1,1 ) )            # right colour line
+    colour_rect = pygame.transform.smoothscale( colour_rect, ( target_rect.width, target_rect.height ) )  # stretch!
+    window.blit( colour_rect, target_rect )                                    # paint it
 
 
 def show_info(coords, screen):
@@ -161,7 +157,7 @@ def show_info(coords, screen):
     elif x >= 800 and x <= 850 and y >= 10 and y <= 60:
         screen.blit(fon, (0, 0))
         pygame.draw.rect(screen, (103, 0, 0), (850, 60, 450, 200))
-        info = ["Золото - используется для найма проф армии, для",
+        info = ["Зололто - используется для найма проф армии, для",
                 "развития науки и культуры и для постройки некоторых",
                 "зданий. Добывается в золотых жилах с пристроенным",
                 "рудником."]
@@ -314,25 +310,23 @@ def show_info(coords, screen):
             coords += intro_rect.height
             screen.blit(string_rendered, intro_rect)
     else:
+
         global board
         board = Board(20, 20)
+        board.set_view(0, 0, 100)
         board.update()
         board.draw(screen)
+        # print(board.iso_poly1)
 
 
-castle_sprites = pygame.sprite.Group()
-farm_sprites = pygame.sprite.Group()
-# castle = Castle(960, 650)
-# castle_sprites.add(castle)
-
-castle = Castle_cl(load_image('castle/castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
-pygame.time.set_timer(MYEVENTTYPE_castle, 1000)
 start_screen()
 size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
-resourses, buildings = [], []
+resourses = []
 food, wood, stone, iron, gold, science, culture, population, happiness, diseases = \
     600, 400, 200, 0, 0, 0, 0, 1000, 60, 0
+foodplus, woodplus, stoneplus, ironplus, goldplus, scienceplus, cultureplus, populationplus,\
+happinessplus, diseasesplus = 1, 1, 0, 0, 10, 0, 0, 1, 0, 0
 resourses.append(load_image('food.png'))
 resourses.append(load_image('wood.png'))
 resourses.append(load_image('stone.png'))
@@ -346,42 +340,172 @@ fon = load_image('background.jpg')
 running = True
 y = 10
 v = 20
+class BUildFarm:
+    def __init__(self, position: tuple, butHeigth: int = 40, butWidth: int = 150, text: str = "Кнопка"):
+        self.position = position
+        self.width = butWidth
+        self.heigth = butHeigth
+        self.text = text
+        self.pos = menu.get_pos()
+
+    def mouse_in(self, mous_pos):
+        x, y = mous_pos
+        px, py = self.position
+        if x > px and x < px + self.width:
+            if y > py and y < py + self.heigth:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def render(self, screen):
+        mousePos = pygame.mouse.get_pos()
+        if self.mouse_in(mousePos):
+            pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+            if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
+                global farm, food, wood
+                farm = Farm(load_image('farm.png'), 3, 1, self.pos[0], self.pos[1], farm_sprites, MYEVENTTYPE_farm)
+                pygame.time.set_timer(MYEVENTTYPE_farm, 3000)
+                menu.ok = False
+                food -= 50
+                wood -= 200
+        elif pygame.mouse.get_pressed() and self.mouse_in(mousePos):
+            pygame.draw.rect(screen, (2, 0, 0), (50, 50, 200, 200))
+        else:
+            pygame.draw.rect(screen, (3, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+        self.font = pygame.font.SysFont('arial', 18)
+        valueSurf = self.font.render(f"{self.text}", True, (51, 51, 51))
+        textx = self.position[0] + (self.width / 2) - (valueSurf.get_rect().width / 2)
+        texty = self.position[1] + (self.heigth / 2) - (valueSurf.get_rect().height / 2)
+        screen.blit(valueSurf, (textx, texty))
+
+
+class BuildMenu:
+    def __init__(self, screen, x, y, lx, ly, side, buildx, buildy):
+        self.x = x
+        self.y = y
+        self.width = 200
+        self.heigth = 350
+        self.position = (board.iso_poly1[3][0] + self.width, board.iso_poly2[3][1] + self.heigth)
+        self.screen = screen
+        self.food = ['Ферма -', load_image('buildfarm.png'), load_image('woodres.png'), '- 50', '- 100']
+        self.ok = False
+        self.lx = lx
+        self.ly = ly
+        self.side = side
+        self.bx = buildx
+        self.by = buildy
+
+    def get_pos(self):
+        return self.bx, self.by
+
+    def show_list(self):
+        ms = pygame.mouse.get_pos()
+        # print(ms, self.x, self.y, self.lx, self.ly)
+        if self.ok:
+            if self.side == 1:
+                pygame.draw.polygon(self.screen, (255, 0, 0), [[self.x + 200, self.y],
+                                                         [self.x + 200, self.ly + 50], [self.lx, self.ly + 50],
+                                                         [self.lx, self.y]], 1)
+            elif self.side == 2:
+                pygame.draw.polygon(self.screen, (255, 0, 0), [[self.lx, self.y],
+                                                               [self.lx, self.ly + 50], [self.x, self.ly + 50],
+                                                               [self.x, self.y]], 1)
+            pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.heigth))
+            font = pygame.font.SysFont('arial', 18)
+            but = BUildFarm(position=(self.x + 10, self.y + 10), butHeigth=40, butWidth=55, text='Ферма-')
+            but.render(self.screen)
+            self.screen.blit(self.food[1], (self.x + 70, self.y + 10))
+            self.screen.blit(self.food[2], (self.x + 70, self.y + 40))
+            string_rendered = font.render(self.food[3], 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = self.y + 10
+            intro_rect.x = self.x + 100
+            screen.blit(string_rendered, intro_rect)
+            string_rendered = font.render(self.food[4], 1, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = self.y + 40
+            intro_rect.x = self.x + 100
+            screen.blit(string_rendered, intro_rect)
+        if (self.side == 1) and \
+                (not (ms[0] >= self.lx and ms[0] <= self.x + 200 and ms[1] >= self.y and ms[1] <= self.ly + 50)):
+            self.ok = False
+        elif (self.side == 2) and \
+                (not (ms[0] <= self.lx and ms[0] >= self.x and ms[1] >= self.y and ms[1] <= self.ly + 50)):
+            self.ok = False
+
+
+board = Board(20, 20)
+board.set_view(0, 0, 100)
+MYEVENTTYPE_farm = pygame.USEREVENT + 1
+MYEVENTTYPE_castle = pygame.USEREVENT + 2
+MYEVENTTYPEzero = pygame.USEREVENT + 3
+pygame.time.set_timer(MYEVENTTYPEzero, 1000)
+menu = BuildMenu(screen, 0, 0, 0, 0, 0, 0, 0)
+farm = Farm(load_image('farm.png'), 3, 1, 1, 1, farm_sprites, MYEVENTTYPE_farm)
+castle = Castle_cl(load_image('castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
+pygame.time.set_timer(MYEVENTTYPE_castle, 1000)
 while running:
-    screen.blit(fon, (0, 0))
-    show_info(pygame.mouse.get_pos(), screen)
     x = 0
-    res_values = [str(food)[0:3], str(wood)[0:3], str(stone)[0:3], str(iron)[0:3], str(gold)[0:3],
-                  str(science)[0:3], str(culture)[0:3],
-                  str(population)[0:4], str(happiness) + '%']
+    menu.show_list()
+    if not menu.ok:
+        screen.blit(fon, (0, 0))
+        show_info(pygame.mouse.get_pos(), screen)
+    res_values = [str(round(food)), str(round(wood)), str(round(stone)), str(round(iron)), str(round(gold)),
+                  str(round(science)), str(round(culture)),
+                  str(round(population)), str(round(happiness)) + '%']
     coords = 80
     font = pygame.font.SysFont('arial', 40)
+    menu.show_list()
     for event in pygame.event.get():
         if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
             terminate()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 terminate()
+        if event.type == pygame.MOUSEMOTION:
+            pass
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if board.grid_pos[1] >= 0:
-                farmcord = board.iso_poly1[3]
-            elif board.grid_pos[1] < 0:
-                farmcord = board.iso_poly2[3]
-            x1 = farmcord[0] + 65
-            y1 = farmcord[1]
-            y1 -= 50
-            farm = Farm(load_image('farm_2.png'), 3, 1, x1, y1, farm_sprites)
-            pygame.time.set_timer(MYEVENTTYPE_farm, 3000)
+            if event.button == 3:
+                if board.grid_pos[1] >= 0:
+                    cord = board.iso_poly1[1]
+                    x1 = cord[0]
+                    y1 = cord[1]
+                    lx = board.iso_poly1[3][0]
+                    ly = board.iso_poly1[3][1]
+                    side = 1
+                    if y1 >= 540:
+                        y1 -= 300
+                    else:
+                        y1 -= 50
+                        ly += 250
+                    menu = BuildMenu(screen, x1, y1, lx, ly, 1, lx + 45, ly - 50)
+                elif board.grid_pos[1] < 0:
+                    cord = board.iso_poly2[3]
+                    x1 = cord[0] - 200
+                    y1 = cord[1]
+                    lx = board.iso_poly2[1][0]
+                    ly = board.iso_poly2[1][1]
+                    side = 2
+                    if y1 >= 540:
+                        y1 -= 300
+                    else:
+                        y1 -= 50
+                        ly += 250
+                    menu = BuildMenu(screen, x1, y1, lx, ly, 2, x1 + 245, y1)
+                menu.ok = True
         if event.type == MYEVENTTYPE_farm:
-            if farm.n < 2:
-                farm.update()
-                pygame.time.set_timer(MYEVENTTYPE_farm, 3000)
-        if event.type == MYEVENTTYPE_castle:
-            castle.update()
-            pygame.time.set_timer(MYEVENTTYPE_castle, 1000)
-
+            if farm.n == 2:
+                foodplus += 10
+            farm.update()
+            pygame.time.set_timer(MYEVENTTYPE_farm, 3000)
+        if event.type == MYEVENTTYPEzero:
+            food += foodplus
+    all_sprites.draw(screen)
     castle_sprites.draw(screen)
     farm_sprites.draw(screen)
-
+    menu.show_list()
     for i in resourses:
         screen.blit(i, (x, y))
         pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 150, 50), 1)
@@ -389,7 +513,7 @@ while running:
         pygame.draw.rect(screen, (103, 0, 0), (x + 52, y + 2, 196, 46))
         x += 200
     for i in res_values:
-        string_rendered = font.render(i, True, (255, 255, 255))
+        string_rendered = font.render(i, 1, (255, 255, 255))
         intro_rect = string_rendered.get_rect()
         intro_rect.top = 10
         intro_rect.x = coords
@@ -397,5 +521,4 @@ while running:
         coords += intro_rect.height
         screen.blit(string_rendered, intro_rect)
     pygame.display.flip()
-    food += v * clock.tick() / 2000
     clock.tick(FPS)
