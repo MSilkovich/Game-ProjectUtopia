@@ -1,9 +1,11 @@
 import pygame
-import os, sys
+import os
+import sys
 from Board import Board
 from startScreen import start_screen
-from Buildings import Castle_cl, Farm, IronMine
-from SETTINGS import MYEVENTTYPE_farm, MYEVENTTYPE_castle, can_build, MYEVENTTYPE_ironmine, grids, mountains
+from Buildings import Castle_cl, Farm, IronMine, Quarry
+from SETTINGS import MYEVENTTYPE_farm, MYEVENTTYPE_castle, can_build, MYEVENTTYPE_ironmine, grids, mountains,\
+    MYEVENTTYPE_quarry
 
 
 pygame.init()
@@ -11,15 +13,31 @@ clock = pygame.time.Clock()
 start = True
 
 n = 0
-global board
-board = Board(20, 20)
-board.set_view(0, 0, 100)
 FPS = 50
 warn = False
+
+board = Board(20, 20)
 
 castle_sprites = pygame.sprite.Group()
 farm_sprites = pygame.sprite.Group()
 ironmine_sprites = pygame.sprite.Group()
+quarry_sprites = pygame.sprite.Group()
+
+
+def draw_rect(spis):
+    pygame.draw.rect(spis[0], spis[1], spis[2])
+
+    font = pygame.font.SysFont('arial', 20)
+    for i in info:
+        string_rendered = font.render(i, True, (255, 255, 255))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.top = ry + spis[5]
+        intro_rect.x = rx + spis[6]
+        screen.blit(string_rendered, intro_rect)
+
+
+def draw_polygon(spis):
+    pygame.draw.polygon(spis[0], spis[1], spis[2], spis[3])
 
 
 def terminate():
@@ -61,7 +79,7 @@ def show_info(coords, screen):
                 "строительства, развития науки и культуры."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 55
@@ -74,7 +92,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 205
@@ -89,7 +107,7 @@ def show_info(coords, screen):
                 "здания. Древесину можно добыть в лесах."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 255
@@ -102,7 +120,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 255
@@ -117,7 +135,7 @@ def show_info(coords, screen):
                 "в каменных залежах с пристроенным карьером."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 455
@@ -130,7 +148,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 455
@@ -145,7 +163,7 @@ def show_info(coords, screen):
                 "жилах с пристроеным рудником."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 655
@@ -158,7 +176,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 655
@@ -174,7 +192,7 @@ def show_info(coords, screen):
                 "рудником."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 855
@@ -187,7 +205,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 855
@@ -201,7 +219,7 @@ def show_info(coords, screen):
                 "Увеличивается специальными постройками."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1055
@@ -214,7 +232,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1055
@@ -224,12 +242,12 @@ def show_info(coords, screen):
     elif x >= 1200 and x <= 1250 and y >= 10 and y <= 60:
         screen.blit(fon, (0, 0))
         pygame.draw.rect(screen, (103, 0, 0), (1250, 60, 470, 150))
-        info = ["Культура и вера - получайте длоходы с мероприятий,",
+        info = ["Культура и вера - получайте доходы с мероприятий,",
                 "повышайте счастье народа. Увеличиваются специальными",
                 "постройками."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1255
@@ -242,7 +260,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1255
@@ -257,7 +275,7 @@ def show_info(coords, screen):
                 "избытка пищи и счастья."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1455
@@ -276,7 +294,7 @@ def show_info(coords, screen):
         n = 0
         for i in info:
             if n == 0:
-                string_rendered = font.render(i, 1, (255, 0, 0))
+                string_rendered = font.render(i, True, (255, 0, 0))
                 intro_rect = string_rendered.get_rect()
                 intro_rect.top = coords
                 intro_rect.x = 1510
@@ -285,7 +303,7 @@ def show_info(coords, screen):
                 screen.blit(string_rendered, intro_rect)
                 n = 1
             else:
-                string_rendered = font.render(i, 1, (0, 255, 0))
+                string_rendered = font.render(i, True, (0, 255, 0))
                 intro_rect = string_rendered.get_rect()
                 intro_rect.top = coords
                 intro_rect.x = 1455
@@ -300,7 +318,7 @@ def show_info(coords, screen):
                 "количеством ресурсов и постройкой культурных зданий."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1130
@@ -313,7 +331,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, 1, (255, 255, 255))
+            string_rendered = font.render(i, True, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1230
@@ -328,17 +346,22 @@ def show_info(coords, screen):
 castle = Castle_cl(load_image('castle/castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
 pygame.time.set_timer(MYEVENTTYPE_castle, 1000)
 
+farm, ironmine, quarry = "", "", ""
+
 start_screen()
 
-warn_width, warn_color = 340, (255, 0, 0)
+warn_width, warn_color, warn_word, farmcord, ironminecord, quarrycord = 340, (255, 0, 0), "", (0, 0), (0, 0), (0, 0)
+
 size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
 resourses, buildings = [], []
 food, wood, stone, iron, gold, science, culture, population, happiness, diseases = \
-    600, 400, 200, 0, 0, 0, 0, 1000, 60, 0
+    100, 0, 100, 100, 0, 0, 0, 1000, 60, 0
+
 foodplus, woodplus, stoneplus, ironplus, goldplus, scienceplus, cultureplus, populationplus,\
-happinessplus, diseasesplus = 1, 1, 0, 0, 10, 0, 0, 1, 0, 0
+happinessplus, diseasesplus = 0, 0, 0, 0, 10, 0, 0, 1, 0, 0
+
 resourses.append(load_image('food.png'))
 resourses.append(load_image('wood.png'))
 resourses.append(load_image('stone.png'))
@@ -349,58 +372,255 @@ resourses.append(load_image('culture.png'))
 resourses.append(load_image('population.png'))
 resourses.append(load_image('happiness .png'))
 fon = load_image('background.jpg')
+
 running = True
-y = 10
-v = 20
+y, v = 10, 20
+
 while running:
+    warn_rect, warn_polygon = [], []
+    # print(board.grid_pos)
+
     if not warn:
         update_bg()
         show_info(pygame.mouse.get_pos(), screen)
+
     if warn:
         info = [warn_word]
+
         if board.grid_pos in buildings and can_build == False:
             info = ["Сейчас строится здание, подождите!"]
         elif board.grid_pos in buildings and can_build == True:
             info = ["На этом месте уже стоит постройка!"]
+
+        if info[0] == "Сейчас строится здание, подождите!":
+            warn_width = 350
+        elif info[0] == "На этом месте уже стоит постройка!":
+            warn_width = 350
+        elif info[0] == "Вы не можете строить здание на этой территории!":
+            warn_width = 480
+        elif info[0] == "Вы не можете строить рудники не в горах!":
+            warn_width = 400
+        elif info[0] == "Вы не можете строить ферму в горах!":
+            warn_width = 360
+
         mx, my = pygame.mouse.get_pos()
-        if board.grid_pos[1] <= -1:  # iso_poly2
-            coords1 = board.iso_poly2[1]
+
+        if board.grid_pos[1] < 0 and not ((board.grid_pos[0] == 1 or board.grid_pos[0] == 0 or board.grid_pos[0] == 2
+                                           or board.grid_pos[0] == 3) and board.grid_pos[1] == -1) and not \
+                ((board.grid_pos[0] == 3 or board.grid_pos[0] == 2) and board.grid_pos[1] == -2) and not \
+                ((board.grid_pos[0] == 4 or board.grid_pos[0] == 3) and board.grid_pos[1] == -3) and not \
+                ((board.grid_pos[0] == 4 or board.grid_pos[0] == 3 or board.grid_pos[0] == 5) and
+                 board.grid_pos[1] == -4) and not ((board.grid_pos[0] == 5 or board.grid_pos[0] == 6) and
+                 board.grid_pos[1] == -5) and not ((board.grid_pos[0] == 7 or board.grid_pos[0] == 6) and
+                 board.grid_pos[1] == -6) and not ((board.grid_pos[0] == 7 or board.grid_pos[0] == 8) and
+                 board.grid_pos[1] == -7) and not ((board.grid_pos[0] == 8 or board.grid_pos[0] == 9) and
+                 board.grid_pos[1] == -8) and not ((board.grid_pos[0] == 10 or board.grid_pos[0] == 9) and
+                 board.grid_pos[1] == -9):  # iso_poly2
+            coords1 = board.iso_poly2[3]
             rx, ry = coords1
-            if ((mx > rx + 350) or (mx < rx - 200) or (my > ry + 33) or (my < ry - 53)):
-                print('u')
+            if ((mx > rx + 200) or (mx < rx - warn_width) or (my > ry + 53) or (my < ry - 53)):
                 warn = False
             screen.blit(fon, (0, 0))
-            pygame.draw.rect(screen, (103, 0, 0), (rx, ry - 35, warn_width, 35))
-            # pygame.draw.polygon(screen, (255, 0, 0), [[rx + 340, ry - 35], [rx + 340, ry], [rx, ry], [board.iso_poly2[2][0],
-            #                                                                                           board.iso_poly2[2][1]],
-            #                                           [board.iso_poly2[3][0], board.iso_poly2[3][1]],
-            #                                           [board.iso_poly2[0][0], board.iso_poly2[0][1]], [rx, ry - 35]], 10)
-            #pygame.draw.rect(screen, (255, 0, 0), (rx - 200, ry - 50, 540, 80), 1)
-            font = pygame.font.SysFont('arial', 20)
-            for i in info:
-                string_rendered = font.render(i, True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = ry - 34
-                intro_rect.x = rx + 5
-                screen.blit(string_rendered, intro_rect)
-            pygame.draw.polygon(screen, warn_color, board.iso_poly2, 3)
 
-        elif board.grid_pos[1] >= 0:  # iso_poly1
+            ry_c, rx_c = -34, 5 - warn_width
+            warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 50, 200 + warn_width, 100), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif board.grid_pos[0] == 3 and board.grid_pos[1] == -1:
+            coords1 = board.iso_poly2[3]
+            rx, ry = coords1
+            if ((mx > rx + warn_width + 200) or (mx < rx) or (my > ry + 53) or (my < ry - 53)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = -34, 205
+            warn_rect = [screen, (103, 0, 0), (rx + 200, ry - 35, warn_width, 35), ry, rx, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx, ry - 50, 200 + warn_width, 100), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 17 and board.grid_pos[1] <= 3) or\
+                (board.grid_pos[0] == 18 and board.grid_pos[1] <= 3) or\
+                (board.grid_pos[0] == 19 and board.grid_pos[1] <= 3) or\
+                (board.grid_pos[0] == 20 and board.grid_pos[1] <= 3):
+            coords1 = board.iso_poly1[3]
+            rx, ry = coords1
+            if ((mx > rx + 200) or (mx < rx - warn_width) or (my > ry + 53) or (my < ry - 53)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = -34, 5 - warn_width
+            warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 50, 200 + warn_width, 100), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+        elif ((board.grid_pos[0] == 0 or board.grid_pos[0] == 1) and board.grid_pos[1] == 0) or\
+                (board.grid_pos[0] == 1 and board.grid_pos[1] == 1): # draw right down iso_poly1
+            coords1 = board.iso_poly1[0]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 123) or (my < ry)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 105, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry + 100, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry, warn_width + 100, 135), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+        elif board.grid_pos[0] == 2 and (board.grid_pos[1] == 1 or board.grid_pos[1] == 2):
+            coords1 = board.iso_poly1[0]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 123) or (my < ry)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 105, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry + 100, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry, warn_width + 100, 135), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+        elif (board.grid_pos[0] == 1 or board.grid_pos[0] == 0 or board.grid_pos[0] == 2)\
+                and (board.grid_pos[1] == -1): # right iso_poly2
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 2 or board.grid_pos[0] == 3) and board.grid_pos[1] == -2:
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 3 or board.grid_pos[0] == 4) and board.grid_pos[1] == -3:
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 3 or board.grid_pos[0] == 4 or board.grid_pos[0] == 5) and board.grid_pos[1] == -4:
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 5 or board.grid_pos[0] == 6) and board.grid_pos[1] == -5:
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 7 or board.grid_pos[0] == 6) and board.grid_pos[1] == -6:
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 8 or board.grid_pos[0] == 7) and board.grid_pos[1] == -7:
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 8 or board.grid_pos[0] == 9) and board.grid_pos[1] == -8:
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + 100) or (mx < rx - warn_width) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, -warn_width
+            warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 10 or board.grid_pos[0] == 9) and board.grid_pos[1] == -9:
+            coords1 = board.iso_poly2[2]
+            rx, ry = coords1
+            if ((mx > rx + 100) or (mx < rx - warn_width) or (my > ry + 34) or (my < ry - 83)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = 8, -warn_width
+            warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 100, warn_width + 102, 136), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+        elif (board.grid_pos[0] == 16 or board.grid_pos[0] == 15) and board.grid_pos[1] == 0: # draw left iso_poly1
             coords1 = board.iso_poly1[1]
             rx, ry = coords1
-            if ((mx > rx + 350) or (mx < rx - 200) or (my > ry + 33) or (my < ry - 53)):
-                print('u')
+            if ((mx > rx) or (mx < rx - warn_width - 200) or (my > ry + 53) or (my < ry - 53)):
                 warn = False
             screen.blit(fon, (0, 0))
-            pygame.draw.rect(screen, (103, 0, 0), (rx, ry - 35, warn_width, 35))
-            font = pygame.font.SysFont('arial', 20)
-            for i in info:
-                string_rendered = font.render(i, True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = ry - 34
-                intro_rect.x = rx + 5
-                screen.blit(string_rendered, intro_rect)
-            pygame.draw.polygon(screen, warn_color, board.iso_poly1, 3)
+
+            ry_c, rx_c = -34, -warn_width - 195
+            warn_rect = [screen, (103, 0, 0), (rx - 200 - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width - 200, ry - 50, 200 + warn_width, 100), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+        else: # iso_poly1
+            coords1 = board.iso_poly1[1]
+            rx, ry = coords1
+            if ((mx > rx + warn_width) or (mx < rx - 200) or (my > ry + 53) or (my < ry - 53)):
+                warn = False
+            screen.blit(fon, (0, 0))
+
+            ry_c, rx_c = - 34, 5
+            warn_rect = [screen, (103, 0, 0), (rx, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
+            pygame.draw.rect(screen, (255, 0, 0), (rx - 200, ry - 50, 200 + warn_width, 100), 1)
+            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+    farm_sprites.draw(screen)
+    castle_sprites.draw(screen)
+    quarry_sprites.draw(screen)
+    ironmine_sprites.draw(screen)
+
+    if len(warn_rect) != 0:
+        draw_rect(warn_rect)
+    if len(warn_polygon) != 0:
+        draw_polygon(warn_polygon)
 
     x = 0
     res_values = [str(food)[0:3], str(wood)[0:3], str(stone)[0:3], str(iron)[0:3], str(gold)[0:3],
@@ -431,12 +651,34 @@ while running:
                             y_farm = farmcord[1] - 50
                             farm = Farm(load_image('farm_3.png'), 3, 1, x_farm, y_farm, farm_sprites)
                             buildings.append(board.grid_pos)
+                            foodplus += 10
                             pygame.time.set_timer(MYEVENTTYPE_farm, 3000)
+                            print(MYEVENTTYPE_farm)
                             can_build = False
 
                         else:
-                            warn_width = 340
                             warn_word = "Вы не можете строить ферму в горах!"
+                            warn = True
+
+                    elif event.button == 4:
+                        if board.grid_pos in mountains:
+                            if board.grid_pos[1] >= 0:
+                                quarrycord = board.iso_poly1[3]
+                            elif board.grid_pos[1] < 0:
+                                quarrycord = board.iso_poly2[3]
+                            x_quarry = quarrycord[0] + 45
+                            y_quarry = quarrycord[1] - 50
+                            grids[board.grid_pos] = False
+                            quarry = Quarry(load_image('quarry.png'), 3, 1, x_quarry,
+                                                y_quarry, quarry_sprites)
+                            buildings.append(board.grid_pos)
+                            stoneplus += 10
+                            pygame.time.set_timer(MYEVENTTYPE_quarry, 3000)
+                            print(MYEVENTTYPE_quarry)
+                            can_build = False
+
+                        else:
+                            warn_word = "Вы не можете строить каменоломню не в горах!"
                             warn = True
 
                     elif event.button == 3:
@@ -447,22 +689,23 @@ while running:
                                 ironminecord = board.iso_poly2[3]
                             x_ironmine = ironminecord[0] + 45
                             y_ironmine = ironminecord[1] - 50
+                            grids[board.grid_pos] = False
                             ironmine = IronMine(load_image('ironmine.png'), 3, 1, x_ironmine,
                                                 y_ironmine, ironmine_sprites)
+                            buildings.append(board.grid_pos)
+                            ironplus += 10
                             pygame.time.set_timer(MYEVENTTYPE_ironmine, 3000)
                             can_build = False
+
                         else:
-                            warn_width = 360
                             warn_word = "Вы не можете строить рудники не в горах!"
                             warn = True
 
                 else:
-                    warn_width = 340
                     warn_word = "Сейчас строится здание, подождите!"
                     warn = True
 
             else:
-                warn_width = 480
                 warn_word = "Вы не можете строить здание на этой территории!"
                 warn = True
 
@@ -477,7 +720,7 @@ while running:
 
         if event.type == MYEVENTTYPE_castle:
             castle.update()
-            pygame.time.set_timer(MYEVENTTYPE_castle, 100)
+            pygame.time.set_timer(MYEVENTTYPE_castle, 150)
 
         if event.type == MYEVENTTYPE_ironmine:
             if ironmine.m < 2:
@@ -488,9 +731,14 @@ while running:
                 ironmine.builded = True
                 print('you can build')
 
-    castle_sprites.draw(screen)
-    farm_sprites.draw(screen)
-    ironmine_sprites.draw(screen)
+        if event.type == MYEVENTTYPE_quarry:
+            if quarry.m < 2:
+                quarry.update()
+                pygame.time.set_timer(MYEVENTTYPE_quarry, 3000)
+            if quarry.m == 2:
+                can_build = True
+                quarry.builded = True
+                print('you can build')
 
     for i in resourses:
         screen.blit(i, (x, y))
@@ -508,5 +756,8 @@ while running:
         coords += intro_rect.height
         screen.blit(string_rendered, intro_rect)
     pygame.display.flip()
-    food += v * clock.tick() / 12000
+    food += foodplus * clock.tick() / 15000
+    stone += stoneplus * clock.tick()
+    iron += ironplus * clock.tick() / 5000
+    print(food, stone, iron)
     clock.tick(FPS)
