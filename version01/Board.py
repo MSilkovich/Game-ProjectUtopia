@@ -156,17 +156,17 @@ class Board:
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 17 and self.grid_pos[1] == 4:
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
-                elif self.grid_pos[0] == 16 and self.grid_pos[1] == 5:
+                elif self.grid_pos[0] == 16 and (self.grid_pos[1] == 5 or self.grid_pos[1] == 4):
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
-                elif self.grid_pos[0] == 15 and self.grid_pos[1] == 6:
+                elif self.grid_pos[0] == 15 and (self.grid_pos[1] == 6 or self.grid_pos[1] == 5):
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
-                elif self.grid_pos[0] == 14 and (self.grid_pos[1] == 7 or self.grid_pos[1] == 6):
+                elif self.grid_pos[0] == 14 and (self.grid_pos[1] == 7):
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
-                elif self.grid_pos[0] == 13 and (self.grid_pos[1] == 8 or self.grid_pos[1] == 6):
+                elif self.grid_pos[0] == 13 and (self.grid_pos[1] == 8):
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 12 and (self.grid_pos[1] == 9 or self.grid_pos[1] == 7):
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
-                elif self.grid_pos[0] == 11 and (self.grid_pos[1] == 10 or self.grid_pos[1] == 8):
+                elif self.grid_pos[0] == 11 and (self.grid_pos[1] == 10):
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 10 and (self.grid_pos[1] == 10 or self.grid_pos[1] == 8):
                     pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
