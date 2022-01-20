@@ -1,11 +1,11 @@
-import pygame
-import os
-import sys
-
-from startScr import start_screen
-from Board import Board
-from Buildings import *
+from startScreen import start_screen
+from Board2 import Board
+from Buildings2 import *
 from SETTINGS import *
+
+pygame.mixer.music.load('data/music/witcher3.mp3')
+pygame.mixer.music.set_volume(0.01)
+pygame.mixer.music.play(-1)
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -339,16 +339,16 @@ food, wood, stone, iron, gold, science, population, happiness, diseases, days = 
 foodplus, woodplus, stoneplus, ironplus, goldplus, scienceplus, populationplus, \
 happinessplus, diseasesplus = 1, 1, 0, 0, 1, 0, 1, 0, 0
 
-resourses.append(load_image('food.png'))
-resourses.append(load_image('wood.png'))
-resourses.append(load_image('stone.png'))
-resourses.append(load_image('iron.png'))
-resourses.append(load_image('gold.png'))
-resourses.append(load_image('science.png'))
-resourses.append(load_image('population.png'))
-resourses.append(load_image('happiness .png'))
-resourses.append(load_image('days.png'))
-fon = load_image('background.jpg')
+resourses.append(load_image('images/food.png'))
+resourses.append(load_image('images/wood.png'))
+resourses.append(load_image('images/stone.png'))
+resourses.append(load_image('images/iron.png'))
+resourses.append(load_image('images/gold.png'))
+resourses.append(load_image('images/science.png'))
+resourses.append(load_image('images/population.png'))
+resourses.append(load_image('images/happiness .png'))
+resourses.append(load_image('images/days.png'))
+fon = load_image('images/background.jpg')
 
 running = True
 y, v = 10, 20
@@ -379,7 +379,7 @@ class BUildFarm:
             pygame.draw.rect(screen, (103, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
                 global farm, food, wood, type_farm, can_build, grids, board
-                farm = Farm(load_image('farm_3.png'), 3, 1, self.pos[0] + 20, self.pos[1], farm_sprites, type_farm)
+                farm = Farm(load_image('images/farm_3.png'), 3, 1, self.pos[0] + 20, self.pos[1], farm_sprites, type_farm)
                 pygame.time.set_timer(type_farm, 3000)
                 menu.ok = False
                 food -= 50
@@ -443,8 +443,8 @@ class BuildMenu:
         self.heigth = 350
         self.position = (board.iso_poly1[3][0] + self.width, board.iso_poly2[3][1] + self.heigth)
         self.screen = screen
-        self.fdres = load_image('foodres.png')
-        self.wdres = load_image('woodres.png')
+        self.fdres = load_image('images/foodres.png')
+        self.wdres = load_image('images/woodres.png')
         self.food = ['Ферма -',  '- 50', '- 100']
         self.mill = ['Лесопилка -', '- 200', '- 25']
         self.ironmine = ['Железный -', '-175', '-75', 'рудник']
@@ -562,10 +562,10 @@ pygame.time.set_timer(type_res, 1000)
 pygame.time.set_timer(type_days, 60000)
 
 menu = BuildMenu(screen, 0, 0, 0, 0, 0, 0, 0)
-farm = Farm(load_image('farm_3.png'), 3, 1, -300, -300, farm_sprites, type_farm)
-mill = Mill(load_image('mill.png'), 3, 1, -300, -300, mill_sprites, type_farm)
-ironmine = IronMine(load_image('ironmine.png'), 3, 1, -300, -300, iron_mine_sprites, type_ironmine)
-castle = Castle_cl(load_image('castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
+farm = Farm(load_image('images/farm_3.png'), 3, 1, -300, -300, farm_sprites, type_farm)
+mill = Mill(load_image('images/mill.png'), 3, 1, -300, -300, mill_sprites, type_farm)
+ironmine = IronMine(load_image('images/ironmine.png'), 3, 1, -300, -300, iron_mine_sprites, type_ironmine)
+castle = Castle_cl(load_image('images/castle/castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
 
 pygame.time.set_timer(type_castle, 150)
 
