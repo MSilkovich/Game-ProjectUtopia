@@ -1,9 +1,10 @@
 import pygame
 import os
 import sys
-from startScreen import start_screen
-from Board2 import Board
-from Buildings2 import Farm, Castle_cl, Mill
+
+from startScr import start_screen
+from Board import Board
+from Buildings import *
 from SETTINGS import *
 
 pygame.init()
@@ -11,31 +12,21 @@ clock = pygame.time.Clock()
 start = True
 n, warn = 0, False
 
-pygame.mixer.music.load('data/music/witcher3.mp3')
-pygame.mixer.music.set_volume(0.05)
-pygame.mixer.music.play(-1)
-
 all_sprites = pygame.sprite.Group()
 castle_sprites = pygame.sprite.Group()
 farm_sprites = pygame.sprite.Group()
 mill_sprites = pygame.sprite.Group()
+iron_mine_sprites = pygame.sprite.Group()
 FPS = 50
 
 
 def load_image(name):
-    fullname = os.path.join('data/images', name)
+    fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
     image = pygame.image.load(fullname)
     return image
-
-
-def draw_sprites():
-    castle_sprites.draw(screen)
-    all_sprites.draw(screen)
-    farm_sprites.draw(screen)
-    mill_sprites.draw(screen)
 
 
 def update_bg():
@@ -76,7 +67,7 @@ def show_info(coords, screen):
                 "строительства, развития науки и культуры."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 55
@@ -89,7 +80,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 205
@@ -104,7 +95,7 @@ def show_info(coords, screen):
                 "здания. Древесину можно добыть в лесах."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 255
@@ -117,7 +108,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 255
@@ -132,7 +123,7 @@ def show_info(coords, screen):
                 "в каменных залежах с пристроенным карьером."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 455
@@ -145,7 +136,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 455
@@ -160,7 +151,7 @@ def show_info(coords, screen):
                 "жилах с пристроеным рудником."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 655
@@ -173,7 +164,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 655
@@ -189,7 +180,7 @@ def show_info(coords, screen):
                 "рудником."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 855
@@ -202,7 +193,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 855
@@ -216,7 +207,7 @@ def show_info(coords, screen):
                 "Увеличивается специальными постройками."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1055
@@ -229,7 +220,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1055
@@ -244,7 +235,7 @@ def show_info(coords, screen):
                 "избытка пищи и счастья."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1255
@@ -263,7 +254,7 @@ def show_info(coords, screen):
         n = 0
         for i in info:
             if n == 0:
-                string_rendered = font.render(i, True, (255, 0, 0))
+                string_rendered = font.render(i, 1, (255, 0, 0))
                 intro_rect = string_rendered.get_rect()
                 intro_rect.top = coords
                 intro_rect.x = 1310
@@ -272,7 +263,7 @@ def show_info(coords, screen):
                 screen.blit(string_rendered, intro_rect)
                 n = 1
             else:
-                string_rendered = font.render(i, True, (0, 255, 0))
+                string_rendered = font.render(i, 1, (0, 255, 0))
                 intro_rect = string_rendered.get_rect()
                 intro_rect.top = coords
                 intro_rect.x = 1255
@@ -287,7 +278,7 @@ def show_info(coords, screen):
                 "количеством ресурсов и постройкой культурных зданий."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1130
@@ -300,7 +291,7 @@ def show_info(coords, screen):
         info = ["Источники"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1230
@@ -313,7 +304,7 @@ def show_info(coords, screen):
         info = ["Количество пройденых вами дней"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
-            string_rendered = font.render(i, True, (255, 255, 255))
+            string_rendered = font.render(i, 1, (255, 255, 255))
             intro_rect = string_rendered.get_rect()
             intro_rect.top = coords
             intro_rect.x = 1475
@@ -345,8 +336,8 @@ resourses, buildings = [], []
 
 food, wood, stone, iron, gold, science, population, happiness, diseases, days = \
     600, 400, 200, 0, 0, 0, 1000, 60, 0, 0
-foodplus, woodplus, stoneplus, ironplus, goldplus, scienceplus, populationplus,\
-happinessplus, diseasesplus = 1, 1, 0, 0, 10, 0, 1, 0, 0
+foodplus, woodplus, stoneplus, ironplus, goldplus, scienceplus, populationplus, \
+happinessplus, diseasesplus = 1, 1, 0, 0, 1, 0, 1, 0, 0
 
 resourses.append(load_image('food.png'))
 resourses.append(load_image('wood.png'))
@@ -409,12 +400,37 @@ class BuildMill(BUildFarm):
         if self.mouse_in(mousePos):
             pygame.draw.rect(screen, (103, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
-                global mill, food, wood, type_mill
+                global mill, food, wood, type_mill, can_build, grids, board
                 mill = Mill(load_image('mill.png'), 3, 1, self.pos[0], self.pos[1], mill_sprites, type_mill)
                 pygame.time.set_timer(type_mill, 5000)
                 menu.ok = False
                 food -= 200
                 wood -= 25
+                can_build = False
+                grids[board.grid_pos] = False
+        else:
+            pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+
+
+class BuildIronMine(BUildFarm):
+    def __init__(self, position: tuple, butHeigth: int = 40, butWidth: int = 150, text: str = "Кнопка"):
+        super().__init__(position, butHeigth, butWidth, text)
+        self.pos = menu.get_pos()
+
+    def render(self, screen):
+        mousePos = pygame.mouse.get_pos()
+        if self.mouse_in(mousePos):
+            pygame.draw.rect(screen, (103, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+            if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
+                global ironmine, food, wood, type_ironmine, can_build, grids, board
+                ironmine = IronMine(load_image('ironmine.png'), 3, 1, self.pos[0], self.pos[1], iron_mine_sprites,
+                            type_ironmine)
+                pygame.time.set_timer(type_ironmine, 7000)
+                menu.ok = False
+                food -= 175
+                wood -= 125
+                can_build = False
+                grids[board.grid_pos] = False
         else:
             pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
 
@@ -431,6 +447,7 @@ class BuildMenu:
         self.wdres = load_image('woodres.png')
         self.food = ['Ферма -',  '- 50', '- 100']
         self.mill = ['Лесопилка -', '- 200', '- 25']
+        self.ironmine = ['Железный -', '-175', '-75', 'рудник']
         self.ok = False
         self.lx = lx
         self.ly = ly
@@ -445,55 +462,90 @@ class BuildMenu:
         ms = pygame.mouse.get_pos()
         # print(ms, self.x, self.y, self.lx, self.ly)
         if self.ok:
-            if self.side == 1:
-                pygame.draw.polygon(self.screen, (255, 0, 0), [[self.x + 200, self.y],
-                                                         [self.x + 200, self.ly + 50], [self.lx, self.ly + 50],
-                                                         [self.lx, self.y]], 1)
-            elif self.side == 2:
-                pygame.draw.polygon(self.screen, (255, 0, 0), [[self.lx, self.y],
-                                                               [self.lx, self.ly + 50], [self.x, self.ly + 50],
-                                                               [self.x, self.y]], 1)
-            pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.heigth))
-            font = pygame.font.SysFont('arial', 18)
-            butfr = BUildFarm(position=(self.x + 10, self.y + 5), butHeigth=60, butWidth=175, text='')
-            butfr.render(self.screen)
-            self.screen.blit(self.fdres, (self.x + 70, self.y + 10))
-            self.screen.blit(self.wdres, (self.x + 70, self.y + 40))
-            string_rendered = font.render(self.food[0], True, (255, 255, 255))
-            intro_rect = string_rendered.get_rect()
-            intro_rect.top = self.y + 10
-            intro_rect.x = self.x + 10
-            screen.blit(string_rendered, intro_rect)
-            string_rendered = font.render(self.food[1], True, (255, 255, 255))
-            intro_rect = string_rendered.get_rect()
-            intro_rect.top = self.y + 10
-            intro_rect.x = self.x + 100
-            screen.blit(string_rendered, intro_rect)
-            string_rendered = font.render(self.food[2], True, (255, 255, 255))
-            intro_rect = string_rendered.get_rect()
-            intro_rect.top = self.y + 40
-            intro_rect.x = self.x + 100
-            butml = BuildMill(position=(self.x + 10, self.y + 75), butHeigth=60, butWidth=175, text='')
-            butml.render(self.screen)
-            self.screen.blit(self.fdres, (self.x + 100, self.y + 80))
-            self.screen.blit(self.wdres, (self.x + 100, self.y + 110))
-            screen.blit(string_rendered, intro_rect)
-            string_rendered = font.render(self.mill[0], True, (255, 255, 255))
-            intro_rect = string_rendered.get_rect()
-            intro_rect.top = self.y + 80
-            intro_rect.x = self.x + 10
-            screen.blit(string_rendered, intro_rect)
-            string_rendered = font.render(self.mill[1], True, (255, 255, 255))
-            intro_rect = string_rendered.get_rect()
-            intro_rect.top = self.y + 80
-            intro_rect.x = self.x + 130
-            screen.blit(string_rendered, intro_rect)
-            string_rendered = font.render(self.mill[2], True, (255, 255, 255))
-            intro_rect = string_rendered.get_rect()
-            intro_rect.top = self.y + 110
-            intro_rect.x = self.x + 130
-            screen.blit(string_rendered, intro_rect)
-
+            if board.grid_pos not in mountains:
+                if self.side == 1:
+                    pygame.draw.polygon(self.screen, (255, 0, 0), [[self.x + 200, self.y],
+                                                                   [self.x + 200, self.ly + 50], [self.lx, self.ly + 50],
+                                                                   [self.lx, self.y]], 1)
+                elif self.side == 2:
+                    pygame.draw.polygon(self.screen, (255, 0, 0), [[self.lx, self.y],
+                                                                   [self.lx, self.ly + 50], [self.x, self.ly + 50],
+                                                                   [self.x, self.y]], 1)
+                pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.heigth))
+                font = pygame.font.SysFont('arial', 18)
+                butfr = BUildFarm(position=(self.x + 10, self.y + 5), butHeigth=60, butWidth=175, text='')
+                butfr.render(self.screen)
+                self.screen.blit(self.fdres, (self.x + 70, self.y + 10))
+                self.screen.blit(self.wdres, (self.x + 70, self.y + 40))
+                string_rendered = font.render(self.food[0], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 10
+                intro_rect.x = self.x + 10
+                screen.blit(string_rendered, intro_rect)
+                string_rendered = font.render(self.food[1], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 10
+                intro_rect.x = self.x + 100
+                screen.blit(string_rendered, intro_rect)
+                string_rendered = font.render(self.food[2], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 40
+                intro_rect.x = self.x + 100
+                butml = BuildMill(position=(self.x + 10, self.y + 75), butHeigth=60, butWidth=175, text='')
+                butml.render(self.screen)
+                self.screen.blit(self.fdres, (self.x + 100, self.y + 80))
+                self.screen.blit(self.wdres, (self.x + 100, self.y + 110))
+                screen.blit(string_rendered, intro_rect)
+                string_rendered = font.render(self.mill[0], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 80
+                intro_rect.x = self.x + 10
+                screen.blit(string_rendered, intro_rect)
+                string_rendered = font.render(self.mill[1], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 80
+                intro_rect.x = self.x + 130
+                screen.blit(string_rendered, intro_rect)
+                string_rendered = font.render(self.mill[2], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 110
+                intro_rect.x = self.x + 130
+                screen.blit(string_rendered, intro_rect)
+            else:
+                if self.side == 1:
+                    pygame.draw.polygon(self.screen, (255, 0, 0), [[self.x + 200, self.y],
+                                                           [self.x + 200, self.ly + 50], [self.lx, self.ly + 50],
+                                                           [self.lx, self.y]], 1)
+                elif self.side == 2:
+                    pygame.draw.polygon(self.screen, (255, 0, 0), [[self.lx, self.y],
+                                                           [self.lx, self.ly + 50], [self.x, self.ly + 50],
+                                                           [self.x, self.y]], 1)
+                pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.heigth))
+                font = pygame.font.SysFont('arial', 18)
+                butfr = BuildIronMine(position=(self.x + 10, self.y + 5), butHeigth=60, butWidth=175, text='')
+                butfr.render(self.screen)
+                self.screen.blit(self.fdres, (self.x + 100, self.y + 10))
+                self.screen.blit(self.wdres, (self.x + 100, self.y + 40))
+                string_rendered = font.render(self.ironmine[0], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 10
+                intro_rect.x = self.x + 10
+                screen.blit(string_rendered, intro_rect)
+                string_rendered = font.render(self.ironmine[3], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 40
+                intro_rect.x = self.x + 10
+                screen.blit(string_rendered, intro_rect)
+                string_rendered = font.render(self.ironmine[1], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 10
+                intro_rect.x = self.x + 130
+                screen.blit(string_rendered, intro_rect)
+                string_rendered = font.render(self.ironmine[2], 1, (255, 255, 255))
+                intro_rect = string_rendered.get_rect()
+                intro_rect.top = self.y + 40
+                intro_rect.x = self.x + 130
+                screen.blit(string_rendered, intro_rect)
         if (self.side == 1) and \
                 (not (ms[0] >= self.lx and ms[0] <= self.x + 200 and ms[1] >= self.y and ms[1] <= self.ly + 50)):
             self.ok = False
@@ -512,17 +564,27 @@ pygame.time.set_timer(type_days, 60000)
 menu = BuildMenu(screen, 0, 0, 0, 0, 0, 0, 0)
 farm = Farm(load_image('farm_3.png'), 3, 1, -300, -300, farm_sprites, type_farm)
 mill = Mill(load_image('mill.png'), 3, 1, -300, -300, mill_sprites, type_farm)
-castle = Castle_cl(load_image('castle/castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
+ironmine = IronMine(load_image('ironmine.png'), 3, 1, -300, -300, iron_mine_sprites, type_ironmine)
+castle = Castle_cl(load_image('castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
 
 pygame.time.set_timer(type_castle, 150)
 
+pygame.mixer.music.load('data/music/witcher3.mp3')
+pygame.mixer.music.set_volume(0.05)
+pygame.mixer.music.play(-1)
+
 warn_width, warn_color, warn_word, farmcord, ironminecord, quarrycord = 340, (255, 0, 0), "", (0, 0), (0, 0), (0, 0)
 
+# pygame.mixer.music.load('')
 while running:
     x = 0
 
     warn_rect, warn_polygon = [], []
     # print(board.grid_pos)
+
+    # if not menu.ok:
+    #     draw()
+    #     show_info(pygame.mouse.get_pos(), screen)
 
     if menu.ok:
         update_bg()
@@ -772,8 +834,11 @@ while running:
                   str(round(science)), str(round(population)), str(round(happiness)) + '%', str(round(days))]
     coords = 80
     font = pygame.font.SysFont('arial', 40)
-
-    draw_sprites()
+    castle_sprites.draw(screen)
+    all_sprites.draw(screen)
+    farm_sprites.draw(screen)
+    mill_sprites.draw(screen)
+    iron_mine_sprites.draw(screen)
     menu.show_list()
 
     for event in pygame.event.get():
@@ -820,6 +885,7 @@ while running:
                                 ly += 250
                             menu = BuildMenu(screen, x1, y1, lx, ly, 2, stayx, stayy)
                         menu.ok = True
+
                     else:
                         warn_word = "Сейчас строится здание, подождите!"
                         warn = True
@@ -836,17 +902,28 @@ while running:
         if event.type == type_mill:
             if mill.n == 1:
                 woodplus += 10
+                can_build = True
             mill.update()
 
         if event.type == type_res:
             food += foodplus
             wood += woodplus
+            iron += ironplus
+            stone += stoneplus
+            gold += goldplus
+            population += populationplus
 
         if event.type == type_days:
             days += 1
 
         if event.type == type_castle:
             castle.update()
+
+        if event.type == type_ironmine:
+            if ironmine.n == 1:
+                ironplus += 10
+                can_build = True
+            ironmine.update()
 
     for i in resourses:
         screen.blit(i, (x, y))
