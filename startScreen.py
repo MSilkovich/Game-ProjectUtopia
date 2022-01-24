@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+from SETTINGS import *
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -48,7 +49,7 @@ class StartButton:
 
 
 class ConButton(StartButton):
-    def __init__(self, position: tuple, butHeigth: int = 40, butWidth: int = 150, text: str = "Кнопка"):
+    def __init__(self, position, butHeigth, butWidth, text):
         super().__init__(position)
         self.position = position
         self.width = butWidth
@@ -59,9 +60,16 @@ class ConButton(StartButton):
         mousePos = pygame.mouse.get_pos()
         if self.mouse_in(mousePos):
             pygame.draw.rect(screen, (0, 50, 255), (self.position[0], self.position[1], self.width, self.heigth))
-            # if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
-            #     global start
-            #     start = False
+            if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
+                global start, food, foodplus, wood, woodplus, stone, stonplus, gold, goldplus, iron, ironres,\
+                    population, populationplus, science, scienceplus, happiness, limit, days,\
+                    structures_save, structures
+                result = cur.execute('''SELECT * FROM Buildings''').fetchall()
+                for elem in result:
+                    structures_save[(elem[4], elem[5])] = (elem[1], elem[2], elem[3], (elem[4], elem[5]))
+                start = False
+
+
         elif pygame.mouse.get_pressed() and self.mouse_in(mousePos):
             pygame.draw.rect(screen, (255, 0, 255), (50, 50, 200, 200))
         else:
@@ -170,7 +178,7 @@ class DescriptionButton(StartButton):
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+    fullname = os.path.join('data/images', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
