@@ -3,17 +3,20 @@ import copy
 import sqlite3
 
 TILE_SIZE = 100
+
 type_farm = pg.USEREVENT + 1
 type_castle = pg.USEREVENT + 2
-type_ironmine = pg.USEREVENT + 3
-type_ironmine_anim = pg.USEREVENT + 4
-type_quarry = pg.USEREVENT + 5
-type_res = pg.USEREVENT + 6
-type_days = pg.USEREVENT + 7
-type_mill = pg.USEREVENT + 8
+type_res = pg.USEREVENT + 3
+type_mill = pg.USEREVENT + 4
+type_days = pg.USEREVENT + 5
+type_quarry = pg.USEREVENT + 6
+type_ironmine = pg.USEREVENT + 7
+type_barracks = pg.USEREVENT + 8
+type_university = pg.USEREVENT
 type_goldmine = pg.USEREVENT + 10
 type_village = pg.USEREVENT + 11
-type_revolt = pg.USEREVENT + 12
+type_error = pg.USEREVENT
+type_event = pg.USEREVENT
 
 grids = {(12, 4): True, (4, 0): True, (8, -9): False, (5, 1): True, (8, 0): True, (10, -3): True, (19, 0): False,
          (11, -4): True, (17, 3): True, (10, 6): True, (9, 8): False, (11, 5): True, (2, 2): False, (15, -4): False,
@@ -51,18 +54,19 @@ grids = {(12, 4): True, (4, 0): True, (8, -9): False, (5, 1): True, (8, 0): True
          (10, 4): True, (1, 1): False, (11, 3): True, (2, 0): True, (9, 6): True, (13, 6): True, (15, 3): True,
          (6, 0): True, (12, -5): True, (12, -8): False}
 
-structures_save = {}
+structures_save = copy.copy(grids)
+
+army = 0
 food, wood, stone, iron, gold, science, population, happiness, days, limit = \
     500, 400, 200, 100, 200, 0, 300, 60, 0, 400
 foodplus, woodplus, stoneplus, ironplus, goldplus, scienceplus, populationplus = 1, 1, 0, 0, 1, 0, 1
 structures = []
 for i in grids:
     structures_save[i] = 0
-con = sqlite3.connect("Save.db")
+con = sqlite3.connect("data/Save.db")
 cur = con.cursor()
+
 mountains = [(10, 10), (10, 9), (10, 8), (11, 10), (11, 9), (11, 8), (12, 9), (12, 8), (12, 7), (13, 8), (13, 7),
              (13, 6), (14, 6), (14, 7)]
 
-filled_grids = []
-
-can_build = True
+can_build, is_army, army_height, army_width, info_army, army_level, finish = True, False, 40, 400, [], 0, False
