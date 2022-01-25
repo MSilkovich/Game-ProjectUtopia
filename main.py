@@ -719,12 +719,16 @@ class BuildMenu:
         self.screen = screen
         self.fdres = load_image('foodres.png')
         self.wdres = load_image('woodres.png')
-        self.food = ['Ферма -',  '- 50', '- 100']
-        self.mill = ['Лесопилка -', '- 200', '- 25']
-        self.ironmine = ['Железный -', '- 175', '- 75', 'рудник']
-        self.quarry = ['Каменоломня -', '- 175', '- 75']
-        self.barracks = ['Казармы - ', '- 300', '- 225']
-        self.university = ['Университет -', '- 300', ' -225']
+        self.stnres = load_image('stone_res.png')
+        self.gldres = load_image('gold_res.png')
+        self.food = ['Ферма -', '- 50', '- 100', '-25']
+        self.mill = ['Лесопилка -', '- 200', '- 25', '-25']
+        self.ironmine = ['Железный -', '-175', '-75', 'рудник', '-100', '-75']
+        self.quarry = ['Каменоломня -', '-150', '-75', '-50']
+        self.goldmine = ['Золотой -', '-175', '-200', 'рудник', '-100']
+        self.village = ['Поселение -', '-100', '-100', '-50', '-20']
+        self.barracks = ['Казармы - ', '- 300', '- 225', ' - 50']
+        self.university = ['Университет -', '- 300', '- 225', '- 500', '']
         self.ok = False
         self.lx = lx
         self.ly = ly
@@ -752,88 +756,68 @@ class BuildMenu:
                                                                    [self.lx, self.ly + 50], [self.x, self.ly + 50],
                                                                    [self.x, self.y]], 1)
                 pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.heigth))
-                font = pygame.font.SysFont('arial', 16)
-                butfr = BUildFarm(position=(self.x + 10, self.y + 5), butHeigth=60, butWidth=175, text='')
+                butfr = BUildFarm(position=(self.x + 10, self.y + 5), butHeigth=90, butWidth=175, text='')
                 butfr.render(self.screen)
                 self.screen.blit(self.fdres, (self.x + 70, self.y + 10))
                 self.screen.blit(self.wdres, (self.x + 70, self.y + 40))
-                string_rendered = font.render(self.food[0], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 10
-                intro_rect.x = self.x + 10
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.food[1], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 10
-                intro_rect.x = self.x + 100
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.food[2], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 40
-                intro_rect.x = self.x + 100
+                self.screen.blit(self.gldres, (self.x + 70, self.y + 70))
+                set_text(self.food[0], self.x + 10, self.y + 10)
+                set_text(self.food[1], self.x + 100, self.y + 10)
+                set_text(self.food[2], self.x + 100, self.y + 40)
+                set_text(self.food[3], self.x + 100, self.y + 70)
 
-                butml = BuildMill(position=(self.x + 10, self.y + 75), butHeigth=60, butWidth=175, text='')
+                butml = BuildMill(position=(self.x + 10, self.y + 95), butHeigth=90, butWidth=175, text='')
                 butml.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 100, self.y + 80))
-                self.screen.blit(self.wdres, (self.x + 100, self.y + 110))
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.mill[0], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 80
-                intro_rect.x = self.x + 10
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.mill[1], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 80
-                intro_rect.x = self.x + 130
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.mill[2], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 110
-                intro_rect.x = self.x + 130
-                screen.blit(string_rendered, intro_rect)
+                self.screen.blit(self.fdres, (self.x + 100, self.y + 100))
+                self.screen.blit(self.wdres, (self.x + 100, self.y + 130))
+                self.screen.blit(self.gldres, (self.x + 100, self.y + 160))
+                set_text(self.mill[0], self.x + 10, self.y + 100)
+                set_text(self.mill[1], self.x + 130, self.y + 100)
+                set_text(self.mill[2], self.x + 130, self.y + 130)
+                set_text(self.mill[3], self.x + 130, self.y + 160)
 
-                butbr = BuildBarracks(position=(self.x + 10, self.y + 145), butHeigth=60, butWidth=175, text='')
-                butbr.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 90, self.y + 150))
-                self.screen.blit(self.wdres, (self.x + 90, self.y + 180))
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.barracks[0], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 150
-                intro_rect.x = self.x + 10
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.barracks[1], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 150
-                intro_rect.x = self.x + 120
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.barracks[2], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 180
-                intro_rect.x = self.x + 120
-                screen.blit(string_rendered, intro_rect)
+                butvil = BuildVillage(position=(self.x + 10, self.y + 185), butHeigth=120, butWidth=175, text='')
+                butvil.render(self.screen)
+                self.screen.blit(self.fdres, (self.x + 100, self.y + 190))
+                self.screen.blit(self.wdres, (self.x + 100, self.y + 220))
+                self.screen.blit(self.stnres, (self.x + 100, self.y + 250))
+                self.screen.blit(self.gldres, (self.x + 100, self.y + 280))
+                set_text(self.village[0], self.x + 10, self.y + 190)
+                set_text(self.village[1], self.x + 130, self.y + 190)
+                set_text(self.village[2], self.x + 130, self.y + 220)
+                set_text(self.village[3], self.x + 130, self.y + 250)
+                set_text(self.village[4], self.x + 130, self.y + 280)
 
-                butuv = BuildUniversity(position=(self.x + 10, self.y + 215), butHeigth=60, butWidth=175, text='')
-                butuv.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 120, self.y + 220))
-                self.screen.blit(self.wdres, (self.x + 120, self.y + 250))
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.university[0], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 220
-                intro_rect.x = self.x + 10
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.university[1], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 220
-                intro_rect.x = self.x + 145
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.university[2], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 250
-                intro_rect.x = self.x + 145
-                screen.blit(string_rendered, intro_rect)
+                # butbr = BuildBarracks(position=(self.x + 10, self.y + 145), butHeigth=60, butWidth=175, text='')
+                # butbr.render(self.screen)
+                # self.screen.blit(self.fdres, (self.x + 90, self.y + 150))
+                # self.screen.blit(self.wdres, (self.x + 90, self.y + 180))
+                # self.screen.blit(self.gldres, (self.x + 90), self.y + 210)
+                # set_text(self.barracks[0], self.x + 10, self.y + 220)
+                # set_text(self.barracks[1], self.x + 110, self.y + 220)
+                # set_text(self.barracks[2], self.x + 110, self.y + 250)
+                # set_text(self.barracks[3], self.x + 110, self.y + 280)
+                #
+                # butuv = BuildUniversity(position=(self.x + 10, self.y + 215), butHeigth=60, butWidth=175, text='')
+                # butuv.render(self.screen)
+                # self.screen.blit(self.fdres, (self.x + 120, self.y + 220))
+                # self.screen.blit(self.wdres, (self.x + 120, self.y + 250))
+                # screen.blit(string_rendered, intro_rect)
+                # string_rendered = font.render(self.university[0], True, (255, 255, 255))
+                # intro_rect = string_rendered.get_rect()
+                # intro_rect.top = self.y + 220
+                # intro_rect.x = self.x + 10
+                # screen.blit(string_rendered, intro_rect)
+                # string_rendered = font.render(self.university[1], True, (255, 255, 255))
+                # intro_rect = string_rendered.get_rect()
+                # intro_rect.top = self.y + 220
+                # intro_rect.x = self.x + 145
+                # screen.blit(string_rendered, intro_rect)
+                # string_rendered = font.render(self.university[2], True, (255, 255, 255))
+                # intro_rect = string_rendered.get_rect()
+                # intro_rect.top = self.y + 250
+                # intro_rect.x = self.x + 145
+                # screen.blit(string_rendered, intro_rect)
 
             else:
                 if self.side == 1:
@@ -846,51 +830,39 @@ class BuildMenu:
                                                            [self.x, self.y]], 1)
                 pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.heigth))
 
-                font = pygame.font.SysFont('arial', 16)
-                butfr = BuildIronMine(position=(self.x + 10, self.y + 5), butHeigth=60, butWidth=175, text='')
+                butfr = BuildIronMine(position=(self.x + 10, self.y + 5), butHeigth=120, butWidth=175, text='')
                 butfr.render(self.screen)
                 self.screen.blit(self.fdres, (self.x + 100, self.y + 10))
                 self.screen.blit(self.wdres, (self.x + 100, self.y + 40))
-                string_rendered = font.render(self.ironmine[0], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 10
-                intro_rect.x = self.x + 10
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.ironmine[3], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 40
-                intro_rect.x = self.x + 10
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.ironmine[1], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 10
-                intro_rect.x = self.x + 130
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.ironmine[2], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 40
-                intro_rect.x = self.x + 130
-                screen.blit(string_rendered, intro_rect)
+                self.screen.blit(self.stnres, (self.x + 100, self.y + 70))
+                self.screen.blit(self.gldres, (self.x + 100, self.y + 100))
+                set_text(self.ironmine[0], self.x + 10, self.y + 10)
+                set_text(self.ironmine[1], self.x + 130, self.y + 10)
+                set_text(self.ironmine[2], self.x + 130, self.y + 40)
+                set_text(self.ironmine[3], self.x + 10, self.y + 40)
+                set_text(self.ironmine[4], self.x + 130, self.y + 70)
+                set_text(self.ironmine[5], self.x + 130, self.y + 100)
 
-                butfr1 = BuildQuarry(position=(self.x + 10, self.y + 75), butHeigth=60, butWidth=187, text='')
+                butfr1 = BuildQuarry(position=(self.x + 10, self.y + 125), butHeigth=90, butWidth=187, text='')
                 butfr1.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 130, self.y + 80))
-                self.screen.blit(self.wdres, (self.x + 130, self.y + 110))
-                string_rendered = font.render(self.quarry[0], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 80
-                intro_rect.x = self.x + 10
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.quarry[1], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 80
-                intro_rect.x = self.x + 160
-                screen.blit(string_rendered, intro_rect)
-                string_rendered = font.render(self.quarry[2], True, (255, 255, 255))
-                intro_rect = string_rendered.get_rect()
-                intro_rect.top = self.y + 110
-                intro_rect.x = self.x + 160
-                screen.blit(string_rendered, intro_rect)
+                self.screen.blit(self.fdres, (self.x + 130, self.y + 130))
+                self.screen.blit(self.wdres, (self.x + 130, self.y + 160))
+                self.screen.blit(self.gldres, (self.x + 130, self.y + 190))
+                set_text(self.quarry[0], self.x + 10, self.y + 130)
+                set_text(self.quarry[1], self.x + 150, self.y + 130)
+                set_text(self.quarry[2], self.x + 150, self.y + 160)
+                set_text(self.quarry[3], self.x + 150, self.y + 190)
+
+                butmine = BuildGoldMine(position=(self.x + 10, self.y + 215), butHeigth=90, butWidth=175, text='')
+                butmine.render(screen)
+                self.screen.blit(self.fdres, (self.x + 100, self.y + 220))
+                self.screen.blit(self.wdres, (self.x + 100, self.y + 250))
+                self.screen.blit(self.stnres, (self.x + 100, self.y + 280))
+                set_text(self.goldmine[0], self.x + 10, self.y + 220)
+                set_text(self.goldmine[1], self.x + 130, self.y + 220)
+                set_text(self.goldmine[2], self.x + 130, self.y + 250)
+                set_text(self.goldmine[3], self.x + 10, self.y + 250)
+                set_text(self.goldmine[4], self.x + 130, self.y + 280)
 
         if (self.side == 1) and \
                 (not (ms[0] >= self.lx and ms[0] <= self.x + 200 and ms[1] >= self.y and ms[1] <= self.ly + 50)):
@@ -909,6 +881,15 @@ def Plauge(plaugers):
     elif chanse < 25:
         population -= plaugers
 
+        
+def set_text(text, x, y):
+    font = pygame.font.SysFont('arial', 16)
+    string_rendered = font.render(text, True, (255, 255, 255))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = y
+    intro_rect.x = x
+    screen.blit(string_rendered, intro_rect)
+        
 
 def saveGame():
     global structures_save
