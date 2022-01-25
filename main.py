@@ -713,12 +713,10 @@ class BuildMenu:
     def __init__(self, screen, x, y, lx, ly, side, buildx, buildy):
         self.x = x
         self.y = y
-        self.width = 200
+        self.width = 400
         self.heigth = 350
         self.position = (board.iso_poly1[3][0] + self.width, board.iso_poly2[3][1] + self.heigth)
         self.screen = screen
-        self.fdres = load_image('foodres.png')
-        self.wdres = load_image('woodres.png')
         self.stnres = load_image('stone_res.png')
         self.gldres = load_image('gold_res.png')
         self.food = ['Ферма -', '- 50', '- 100', '-25']
@@ -727,8 +725,10 @@ class BuildMenu:
         self.quarry = ['Каменоломня -', '-150', '-75', '-50']
         self.goldmine = ['Золотой -', '-175', '-200', 'рудник', '-100']
         self.village = ['Поселение -', '-100', '-100', '-50', '-20']
-        self.barracks = ['Казармы - ', '- 300', '- 225', ' - 50']
-        self.university = ['Университет -', '- 300', '- 225', '- 500', '']
+        self.barracks = ['Казармы - ', '- 300', '- 225', ' - 150', '-100']
+        self.university = ['Университет -', '- 300', '- 225', '- 500', '-300']
+        self.fdres = load_image('foodres.png')
+        self.wdres = load_image('woodres.png')
         self.ok = False
         self.lx = lx
         self.ly = ly
@@ -745,132 +745,122 @@ class BuildMenu:
 
     def show_list(self):
         ms = pygame.mouse.get_pos()
+        a = self.x - 100
+        if self.side == 1:
+            # pygame.draw.polygon(self.screen, (255, 0, 0), [[self.x + 400, self.y],
+            #                                                [self.x + 400, self.ly + 50], [self.lx, self.ly + 50],
+            #                                                [self.lx, self.y]], 1)
+            x = self.x
+            if board.grid_pos in mountains:
+                self.width = 200
+        elif self.side == 2:
+            # pygame.draw.polygon(self.screen, (255, 0, 0), [[self.lx, self.y],
+            #                                                [self.lx, self.ly + 50], [self.x, self.ly + 50],
+            #                                                [self.x, self.y]], 1)
+            x = self.x - 200
         if self.ok:
             if board.grid_pos not in mountains:
-                if self.side == 1:
-                    pygame.draw.polygon(self.screen, (255, 0, 0), [[self.x + 200, self.y],
-                                                                   [self.x + 200, self.ly + 50], [self.lx, self.ly + 50],
-                                                                   [self.lx, self.y]], 1)
-                elif self.side == 2:
-                    pygame.draw.polygon(self.screen, (255, 0, 0), [[self.lx, self.y],
-                                                                   [self.lx, self.ly + 50], [self.x, self.ly + 50],
-                                                                   [self.x, self.y]], 1)
-                pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.heigth))
-                butfr = BUildFarm(position=(self.x + 10, self.y + 5), butHeigth=90, butWidth=175, text='')
+                pygame.draw.rect(self.screen, (0, 0, 0), (x, self.y, self.width, self.heigth))
+                butfr = BUildFarm(position=(x + 10, self.y + 5), butHeigth=90, butWidth=175, text='')
                 butfr.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 70, self.y + 10))
-                self.screen.blit(self.wdres, (self.x + 70, self.y + 40))
-                self.screen.blit(self.gldres, (self.x + 70, self.y + 70))
-                set_text(self.food[0], self.x + 10, self.y + 10)
-                set_text(self.food[1], self.x + 100, self.y + 10)
-                set_text(self.food[2], self.x + 100, self.y + 40)
-                set_text(self.food[3], self.x + 100, self.y + 70)
-
-                butml = BuildMill(position=(self.x + 10, self.y + 95), butHeigth=90, butWidth=175, text='')
+                self.screen.blit(self.fdres, (x + 70, self.y + 10))
+                self.screen.blit(self.wdres, (x + 70, self.y + 40))
+                self.screen.blit(self.gldres, (x + 70, self.y + 70))
+                set_text(self.food[0], x + 10, self.y + 10)
+                set_text(self.food[1], x + 100, self.y + 10)
+                set_text(self.food[2], x + 100, self.y + 40)
+                set_text(self.food[3], x + 100, self.y + 70)
+                butml = BuildMill(position=(x + 10, self.y + 95), butHeigth=90, butWidth=175, text='')
                 butml.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 100, self.y + 100))
-                self.screen.blit(self.wdres, (self.x + 100, self.y + 130))
-                self.screen.blit(self.gldres, (self.x + 100, self.y + 160))
-                set_text(self.mill[0], self.x + 10, self.y + 100)
-                set_text(self.mill[1], self.x + 130, self.y + 100)
-                set_text(self.mill[2], self.x + 130, self.y + 130)
-                set_text(self.mill[3], self.x + 130, self.y + 160)
-
-                butvil = BuildVillage(position=(self.x + 10, self.y + 185), butHeigth=120, butWidth=175, text='')
+                self.screen.blit(self.fdres, (x + 100, self.y + 100))
+                self.screen.blit(self.wdres, (x + 100, self.y + 130))
+                self.screen.blit(self.gldres, (x + 100, self.y + 160))
+                set_text(self.mill[0], x + 10, self.y + 100)
+                set_text(self.mill[1], x + 130, self.y + 100)
+                set_text(self.mill[2], x + 130, self.y + 130)
+                set_text(self.mill[3], x + 130, self.y + 160)
+                butvil = BuildVillage(position=(x + 10, self.y + 185), butHeigth=120, butWidth=175, text='')
                 butvil.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 100, self.y + 190))
-                self.screen.blit(self.wdres, (self.x + 100, self.y + 220))
-                self.screen.blit(self.stnres, (self.x + 100, self.y + 250))
-                self.screen.blit(self.gldres, (self.x + 100, self.y + 280))
-                set_text(self.village[0], self.x + 10, self.y + 190)
-                set_text(self.village[1], self.x + 130, self.y + 190)
-                set_text(self.village[2], self.x + 130, self.y + 220)
-                set_text(self.village[3], self.x + 130, self.y + 250)
-                set_text(self.village[4], self.x + 130, self.y + 280)
-
-                # butbr = BuildBarracks(position=(self.x + 10, self.y + 145), butHeigth=60, butWidth=175, text='')
-                # butbr.render(self.screen)
-                # self.screen.blit(self.fdres, (self.x + 90, self.y + 150))
-                # self.screen.blit(self.wdres, (self.x + 90, self.y + 180))
-                # self.screen.blit(self.gldres, (self.x + 90), self.y + 210)
-                # set_text(self.barracks[0], self.x + 10, self.y + 220)
-                # set_text(self.barracks[1], self.x + 110, self.y + 220)
-                # set_text(self.barracks[2], self.x + 110, self.y + 250)
-                # set_text(self.barracks[3], self.x + 110, self.y + 280)
-                #
-                # butuv = BuildUniversity(position=(self.x + 10, self.y + 215), butHeigth=60, butWidth=175, text='')
-                # butuv.render(self.screen)
-                # self.screen.blit(self.fdres, (self.x + 120, self.y + 220))
-                # self.screen.blit(self.wdres, (self.x + 120, self.y + 250))
-                # screen.blit(string_rendered, intro_rect)
-                # string_rendered = font.render(self.university[0], True, (255, 255, 255))
-                # intro_rect = string_rendered.get_rect()
-                # intro_rect.top = self.y + 220
-                # intro_rect.x = self.x + 10
-                # screen.blit(string_rendered, intro_rect)
-                # string_rendered = font.render(self.university[1], True, (255, 255, 255))
-                # intro_rect = string_rendered.get_rect()
-                # intro_rect.top = self.y + 220
-                # intro_rect.x = self.x + 145
-                # screen.blit(string_rendered, intro_rect)
-                # string_rendered = font.render(self.university[2], True, (255, 255, 255))
-                # intro_rect = string_rendered.get_rect()
-                # intro_rect.top = self.y + 250
-                # intro_rect.x = self.x + 145
-                # screen.blit(string_rendered, intro_rect)
-
+                self.screen.blit(self.fdres, (x + 100, self.y + 190))
+                self.screen.blit(self.wdres, (x + 100, self.y + 220))
+                self.screen.blit(self.stnres, (x + 100, self.y + 250))
+                self.screen.blit(self.gldres, (x + 100, self.y + 280))
+                set_text(self.village[0], x + 10, self.y + 190)
+                set_text(self.village[1], x + 130, self.y + 190)
+                set_text(self.village[2], x + 130, self.y + 220)
+                set_text(self.village[3], x + 130, self.y + 250)
+                butbrc = BuildBarracks(position=(x + 190, self.y + 5), butHeigth=120, butWidth=175, text='')
+                butbrc.render(self.screen)
+                self.screen.blit(self.fdres, (x + 260, self.y + 10))
+                self.screen.blit(self.wdres, (x + 260, self.y + 40))
+                self.screen.blit(self.stnres, (x + 260, self.y + 70))
+                self.screen.blit(self.gldres, (x + 260, self.y + 100))
+                set_text(self.barracks[0], x + 190, self.y + 10)
+                set_text(self.barracks[1], x + 310, self.y + 10)
+                set_text(self.barracks[2], x + 310, self.y + 30)
+                set_text(self.barracks[3], x + 310, self.y + 70)
+                set_text(self.barracks[4], x + 310, self.y + 100)
+                butuni = BuildUniversity(position=(x + 190, self.y + 125), butHeigth=120, butWidth=175, text='')
+                butuni.render(self.screen)
+                self.screen.blit(self.fdres, (x + 280, self.y + 130))
+                self.screen.blit(self.wdres, (x + 280, self.y + 160))
+                self.screen.blit(self.stnres, (x + 280, self.y + 190))
+                self.screen.blit(self.gldres, (x + 280, self.y + 220))
+                set_text(self.university[0], x + 190, self.y + 130)
+                set_text(self.university[1], x + 330, self.y + 130)
+                set_text(self.university[2], x + 330, self.y + 160)
+                set_text(self.university[3], x + 330, self.y + 190)
+                set_text(self.university[4], x + 330, self.y + 220)
             else:
-                if self.side == 1:
-                    pygame.draw.polygon(self.screen, (255, 0, 0), [[self.x + 200, self.y],
-                                                           [self.x + 200, self.ly + 50], [self.lx, self.ly + 50],
-                                                           [self.lx, self.y]], 1)
-                elif self.side == 2:
-                    pygame.draw.polygon(self.screen, (255, 0, 0), [[self.lx, self.y],
-                                                           [self.lx, self.ly + 50], [self.x, self.ly + 50],
-                                                           [self.x, self.y]], 1)
-                pygame.draw.rect(self.screen, (0, 0, 0), (self.x, self.y, self.width, self.heigth))
+                pygame.draw.rect(self.screen, (0, 0, 0), (x, self.y, self.width, self.heigth))
+                butirm = BuildIronMine(position=(x + 10, self.y + 5), butHeigth=120, butWidth=175, text='')
+                butirm.render(self.screen)
+                self.screen.blit(self.fdres, (x + 100, self.y + 10))
+                self.screen.blit(self.wdres, (x + 100, self.y + 40))
+                self.screen.blit(self.stnres, (x + 100, self.y + 70))
+                self.screen.blit(self.gldres, (x + 100, self.y + 100))
+                set_text(self.ironmine[0], x + 10, self.y + 10)
+                set_text(self.ironmine[1], x + 130, self.y + 10)
+                set_text(self.ironmine[2], x + 130, self.y + 40)
+                set_text(self.ironmine[3], x + 10, self.y + 40)
+                set_text(self.ironmine[4], x + 130, self.y + 70)
+                set_text(self.ironmine[5], x + 130, self.y + 100)
 
-                butfr = BuildIronMine(position=(self.x + 10, self.y + 5), butHeigth=120, butWidth=175, text='')
-                butfr.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 100, self.y + 10))
-                self.screen.blit(self.wdres, (self.x + 100, self.y + 40))
-                self.screen.blit(self.stnres, (self.x + 100, self.y + 70))
-                self.screen.blit(self.gldres, (self.x + 100, self.y + 100))
-                set_text(self.ironmine[0], self.x + 10, self.y + 10)
-                set_text(self.ironmine[1], self.x + 130, self.y + 10)
-                set_text(self.ironmine[2], self.x + 130, self.y + 40)
-                set_text(self.ironmine[3], self.x + 10, self.y + 40)
-                set_text(self.ironmine[4], self.x + 130, self.y + 70)
-                set_text(self.ironmine[5], self.x + 130, self.y + 100)
+                butqu = BuildQuarry(position=(x + 10, self.y + 125), butHeigth=90, butWidth=187, text='')
+                butqu.render(self.screen)
+                self.screen.blit(self.fdres, (x + 120, self.y + 130))
+                self.screen.blit(self.wdres, (x + 120, self.y + 160))
+                self.screen.blit(self.gldres, (x + 120, self.y + 190))
+                set_text(self.quarry[0], x + 10, self.y + 130)
+                set_text(self.quarry[1], x + 150, self.y + 130)
+                set_text(self.quarry[2], x + 150, self.y + 160)
+                set_text(self.quarry[3], x + 150, self.y + 190)
 
-                butfr1 = BuildQuarry(position=(self.x + 10, self.y + 125), butHeigth=90, butWidth=187, text='')
-                butfr1.render(self.screen)
-                self.screen.blit(self.fdres, (self.x + 130, self.y + 130))
-                self.screen.blit(self.wdres, (self.x + 130, self.y + 160))
-                self.screen.blit(self.gldres, (self.x + 130, self.y + 190))
-                set_text(self.quarry[0], self.x + 10, self.y + 130)
-                set_text(self.quarry[1], self.x + 150, self.y + 130)
-                set_text(self.quarry[2], self.x + 150, self.y + 160)
-                set_text(self.quarry[3], self.x + 150, self.y + 190)
-
-                butmine = BuildGoldMine(position=(self.x + 10, self.y + 215), butHeigth=90, butWidth=175, text='')
+                butmine = BuildGoldMine(position=(x + 10, self.y + 215), butHeigth=90, butWidth=175, text='')
                 butmine.render(screen)
-                self.screen.blit(self.fdres, (self.x + 100, self.y + 220))
-                self.screen.blit(self.wdres, (self.x + 100, self.y + 250))
-                self.screen.blit(self.stnres, (self.x + 100, self.y + 280))
-                set_text(self.goldmine[0], self.x + 10, self.y + 220)
-                set_text(self.goldmine[1], self.x + 130, self.y + 220)
-                set_text(self.goldmine[2], self.x + 130, self.y + 250)
-                set_text(self.goldmine[3], self.x + 10, self.y + 250)
-                set_text(self.goldmine[4], self.x + 130, self.y + 280)
+                self.screen.blit(self.fdres, (x + 100, self.y + 220))
+                self.screen.blit(self.wdres, (x + 100, self.y + 250))
+                self.screen.blit(self.stnres, (x + 100, self.y + 280))
+                set_text(self.goldmine[0], x + 10, self.y + 220)
+                set_text(self.goldmine[1], x + 130, self.y + 220)
+                set_text(self.goldmine[2], x + 130, self.y + 250)
+                set_text(self.goldmine[3], x + 10, self.y + 250)
+                set_text(self.goldmine[4], x + 130, self.y + 280)
 
-        if (self.side == 1) and \
-                (not (ms[0] >= self.lx and ms[0] <= self.x + 200 and ms[1] >= self.y and ms[1] <= self.ly + 50)):
-            self.ok = False
+        if board.grid_pos not in mountains:
+            if (self.side == 1) and \
+                    (not (ms[0] >= self.lx and ms[0] <= x + 400 and ms[1] >= self.y and ms[1] <= self.ly + 50)):
+                self.ok = False
 
-        elif (self.side == 2) and \
-                (not (ms[0] <= self.lx and ms[0] >= self.x and ms[1] >= self.y and ms[1] <= self.ly + 50)):
-            self.ok = False
+            elif (self.side == 2) and \
+                    (not (ms[0] <= self.lx and ms[0] >= x and ms[1] >= self.y and ms[1] <= self.ly + 50)):
+                self.ok = False
+
+
+        elif board.grid_pos in mountains:
+            if (self.side == 1) and \
+                    (not (ms[0] >= self.lx and ms[0] <= x + 200 and ms[1] >= self.y and ms[1] <= self.ly + 50)):
+                self.ok = False
 
 
 def Plauge(plaugers):
