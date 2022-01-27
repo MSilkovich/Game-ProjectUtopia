@@ -1,8 +1,9 @@
-from startScreen import start_screen
-from Board2 import Board
-from Buildings2 import *
+fimport random
+
+from Board import Board
+from Buildings import *
 from SETTINGS import *
-import random
+from startScr import start_screen
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -19,10 +20,10 @@ start_screen()
 size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
-resourses, buildings = [], []
+ersourses, buildings = [], []
 
 chance_revolt, chance_raid = 0, 0
-victims_of_infection = 100
+victims_of_infection = 200
 strange_infection = 5
 
 running = True
@@ -69,8 +70,11 @@ def draw_rect(spis):
 
 
 def saveGame():
-    global structures_save
+    global structures_save, days, maxdays
     limit1 = limit
+    print(days, maxdays)
+    if days > maxdays:
+        cur.execute(f"""UPDATE maxdays SET maxdays = {days} WHERE id = 1""")
     cur.execute(f"""DELETE FROM Buildings 
             WHERE id > 1""")
     cur.execute(f"""DELETE FROM resourses WHERE id > 0""")
@@ -335,7 +339,7 @@ class Raids:
         self.chance = chance
         self.raid = random.randint(0, 100)
         if self.raid < self.chance:
-            global structures, foodplus, woodplus, stoneplus, ironplus, grids, scienceplus, army_level, goldplus,\
+            global structures, foodplus, woodplus, stoneplus, ironplus, grids, scienceplus, army_level, goldplus, \
                 finish, population, food, wood, stone, iron, science, gold
             chance_remove = random.randint(1, 10)
 
@@ -410,30 +414,31 @@ class Raids:
                 population -= ((army_level * 100) / 2)
                 population -= (300 * (chance_remove - army_level))
 
+
 def global_changes():
     global food, population, populationplus, happiness, limit, chance_revolt, gold, food, wood, stone, iron, \
         science, strange_infection, chance_raid, victims_of_infection
     populationplus = round((food - population) / 100)
-    if round(food - population) > 1000 and happiness < 100 and limit > population:
-        happiness += 1
-    elif ((round((population - food)) > 500) or (limit - population < 100)) and happiness > 0:
-        happiness -= 1
+    if round(food - population) > 100 and happiness < 100 and limit > population:
+        happiness += 0.3
+    elif ((population - food) > 500) or (limit - population < 100) and happiness > 0:
+        happiness -= 0.3
     if happiness < 50:
         chance_revolt += 1
     elif happiness > 75:
         chance_revolt = 0
         gold += 1
         population += 1
-        food += 1 
+        food += 1
         wood += 1
         stone += 1
         iron += 1
     elif gold >= 1000:
-        chance_raid += 1
+        chance_raid += 0.5
     elif gold < 1000:
         chance_raid = 0
     population += populationplus
-    if victims_of_infection > 200:        # victims_of_infection = 200 где то там поменял
+    if victims_of_infection > 200:
         victims_of_infection = round(population / 100) * 10
         victims_of_infection -= science
 
@@ -535,7 +540,7 @@ class BuildIronMine(BUildFarm):
                 global ironmine, food, wood, type_ironmine, can_build, grids, board, warn, warn_word, error
                 if food >= 175 and wood >= 125:
                     ironmine = Build(load_image('ironmine.png'), 3, 1, self.pos[0], self.pos[1], all_sprites,
-                                type_ironmine)
+                                     type_ironmine)
                     pygame.time.set_timer(type_ironmine, 7000)
                     menu.ok = False
                     food -= 175
@@ -596,14 +601,14 @@ class BuildQuarry(BUildFarm):
                 global quarry, food, wood, type_quarry, can_build, grids, board, warn_word, warn, error
                 if food >= 175 and wood >= 125:
                     quarry = Build(load_image('quarry.png'), 3, 1, self.pos[0], self.pos[1], all_sprites,
-                                        type_quarry)
+                                   type_quarry)
                     pygame.time.set_timer(type_quarry, 6000)
                     menu.ok = False
                     food -= 175
                     wood -= 125
                     can_build = False
                     grids[board.grid_pos] = False
-                    structures.append((quarry, self.pos[0], self.pos[1],self.cell, 'quarry'))
+                    structures.append((quarry, self.pos[0], self.pos[1], self.cell, 'quarry'))
                     structures_save[self.cell] = ('quarry', self.pos[0], self.pos[1], self.cell)
                 else:
                     pygame.time.set_timer(type_error, 3000)
@@ -627,8 +632,8 @@ class BuildBarracks(BUildFarm):
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
                 global barracks, food, wood, type_barracks, can_build, grids, board, warn, warn_word, error
                 if food >= 300 and wood >= 225:
-                    barracks = Build(load_image('barracks_3.png'), 3, 1, self.pos[0], self.pos[1] - 30, all_sprites,
-                            type_barracks)
+                    barracks = Build(load_image('barracks.png'), 3, 1, self.pos[0], self.pos[1] - 30, all_sprites,
+                                     type_barracks)
                     pygame.time.set_timer(type_barracks, 7000)
                     menu.ok = False
                     food -= 300
@@ -660,7 +665,7 @@ class BuildUniversity(BUildFarm):
                 global university, food, wood, type_university, can_build, grids, board, warn, warn_word, error
                 if food >= 300 and wood >= 225:
                     university = Build(load_image('university.png'), 3, 1, self.pos[0], self.pos[1] - 20, all_sprites,
-                            type_university)
+                                       type_university)
                     pygame.time.set_timer(type_university, 9000)
                     menu.ok = False
                     food -= 300
@@ -860,6 +865,15 @@ class BuildMenu:
                 self.ok = False
 
 
+def set_text(text, x, y):
+    font = pygame.font.SysFont('arial', 16)
+    string_rendered = font.render(text, True, (255, 255, 255))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = y
+    intro_rect.x = x
+    screen.blit(string_rendered, intro_rect)
+
+
 def Plauge(plaugers):
     chanse = random.randint(0, 100)
     global population
@@ -868,37 +882,6 @@ def Plauge(plaugers):
     elif chanse < 25:
         population -= plaugers
 
-        
-def set_text(text, x, y):
-    font = pygame.font.SysFont('arial', 16)
-    string_rendered = font.render(text, True, (255, 255, 255))
-    intro_rect = string_rendered.get_rect()
-    intro_rect.top = y
-    intro_rect.x = x
-    screen.blit(string_rendered, intro_rect)
-        
-
-def saveGame():
-    global structures_save
-    limit1 = limit
-    cur.execute(f"""DELETE FROM Buildings 
-            WHERE id > 1""")
-    cur.execute(f"""DELETE FROM resourses WHERE id > 0""")
-    cur.execute(f"""INSERT INTO resourses(food, foodplus, wood, woodplus, stone, stoneplus, iron, ironplus,
-             gold, goldplus, population, populationplus, happiness, science, scienceplus, limit1, days)
-             VALUES ({food}, {foodplus}, {wood}, {woodplus}, {stone}, {stoneplus}, {iron}, {ironplus}, {gold}
-             , {goldplus}, {population}, {populationplus}, {happiness}, {science}, {scienceplus}, {limit1}, {days})""")
-    for i in structures_save:
-        if structures_save[i] != 0:
-            type1 = structures_save[i][0]
-            x1 = structures_save[i][1]
-            y1 = structures_save[i][2]
-            cell1 = structures_save[i][3]
-            n = 1
-            n += 1
-            cur.execute(f"""INSERT INTO Buildings(type, x, y, cellx, celly) VALUES ('{type1}', {x1}, {y1},
-            {cell1[0]},{cell1[1]})""")
-            con.commit()
 
 
 def draw_sprites():
@@ -921,9 +904,11 @@ for i in structures_save:
         elif a[0] == 'goldmine':
             all_sprites.add(Build(load_image('finishedgoldmine.png'), 1, 1, a[1], a[2], all_sprites, type_goldmine))
         elif a[0] == 'university':
-            all_sprites.add(Build(load_image('finisheduniversity.png'), 1, 1, a[1], a[2] - 20, all_sprites, type_university))
+            all_sprites.add(
+                Build(load_image('finisheduniversity.png'), 1, 1, a[1], a[2] - 20, all_sprites, type_university))
         elif a[0] == 'barracks':
-            all_sprites.add(Build(load_image('finishedbarracks.png'), 1, 1, a[1], a[2] - 30, all_sprites, type_barracks))
+            all_sprites.add(
+                Build(load_image('finishedbarracks.png'), 1, 1, a[1], a[2] - 30, all_sprites, type_barracks))
 
         food = cur.execute('''SELECT food FROM resourses''').fetchall()[0][0]
         foodplus = cur.execute('''SELECT foodplus FROM resourses''').fetchall()[0][0]
@@ -943,7 +928,6 @@ for i in structures_save:
         limit = cur.execute('''SELECT limit1 FROM resourses''').fetchall()[0][0]
         days = cur.execute('''SELECT days FROM resourses''').fetchall()[0][0]
 
-
 board = Board(20, 20)
 # board.set_view(0, 0, 100)
 
@@ -955,9 +939,11 @@ farm = Build(load_image('farm_3.png'), 3, 1, -300, -300, all_sprites, type_farm)
 mill = Build(load_image('mill.png'), 3, 1, -300, -300, all_sprites, type_mill)
 ironmine = Build(load_image('ironmine.png'), 3, 1, -300, -300, all_sprites, type_ironmine)
 quarry = Build(load_image('quarry.png'), 3, 1, -300, -300, all_sprites, type_quarry)
+goldmine = Build(load_image('goldmine1.png'), 3, 1, -300, -300, all_sprites, type_goldmine)
+village = Build(load_image('village.png'), 3, 1, -300, -300, all_sprites, type_village)
 barracks = Build(load_image('barracks.png'), 3, 1, -300, -300, all_sprites, type_barracks)
 university = Build(load_image('university.png'), 3, 1, -300, -300, all_sprites, type_university)
-castle = Castle_cl(load_image('castle/castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
+castle = Castle_cl(load_image('castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
 structures.append((castle, 960, 650, (12, 2), 'castle'))
 
 pygame.time.set_timer(type_event, 20000)
@@ -967,7 +953,7 @@ pygame.time.set_timer(type_castle, 150)
 # pygame.mixer.music.set_volume(0.05)
 # pygame.mixer.music.play(-1)
 
-warn_width, warn_color, warn_word, farmcord, ironminecord, quarrycord, barrackscord = 340, (255, 0, 0), "", (0, 0),\
+warn_width, warn_color, warn_word, farmcord, ironminecord, quarrycord, barrackscord = 340, (255, 0, 0), "", (0, 0), \
                                                                                       (0, 0), (0, 0), (0, 0)
 
 while running:
@@ -1342,10 +1328,15 @@ while running:
 
         if event.type == type_ironmine:
             if ironmine.n == 1:
-                # ironplus += 10
-                goldplus += 10
+                ironplus += 10
                 can_build = True
             ironmine.update()
+
+        if event.type == type_goldmine:
+            if goldmine.n == 1:
+                goldplus += 10
+                can_build = True
+            goldmine.update()
 
         if event.type == type_res:
             food += foodplus
@@ -1355,6 +1346,12 @@ while running:
             gold += goldplus
             science += scienceplus
             global_changes()
+
+        if event.type == type_village:
+            if village.n == 1:
+                limit += 500
+                can_build = True
+            village.update()
 
         if event.type == type_days:
             days += 1
@@ -1388,3 +1385,4 @@ while running:
 
     pygame.display.flip()
     clock.tick(FPS)
+
