@@ -111,8 +111,8 @@ def show_info(coords, screen):
         pygame.draw.rect(screen, (103, 0, 0), (50, 60, 450, 200))
         info = ["Пища - сновной ресурс для выживания вашего города.",
                 "Количество пищи влияет на численность населения и",
-                "его состояние. Пища используется для найма армии,",
-                "строительства, развития науки и культуры."]
+                "его состояние. Пища используется для найма армии и",
+                "строительства."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -127,7 +127,7 @@ def show_info(coords, screen):
         pygame.draw.rect(screen, (103, 0, 0), (250, 60, 450, 150))
         info = ["Древесина - основной строительный материал вашего",
                 "города, из древесины строятся основные экономические",
-                "здания. Древесину можно добыть в лесах."]
+                "здания. Древесину можно добыть в лесопилках."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -139,10 +139,9 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     elif x >= 400 and x <= 450 and y >= 10 and y <= 60:
         draw_board_ok = False
-        pygame.draw.rect(screen, (103, 0, 0), (450, 60, 475, 150))
+        pygame.draw.rect(screen, (103, 0, 0), (450, 60, 475, 100))
         info = ["Камень - строительный ресурс для некоторых ",
-                "сооружений и улучшения стен в поздней игре. Добывается",
-                "в каменных залежах с пристроенным карьером."]
+                "сооружений. Добывается в карьерах"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -157,7 +156,7 @@ def show_info(coords, screen):
         pygame.draw.rect(screen, (103, 0, 0), (650, 60, 450, 150))
         info = ["Железо - полезный стратегический ресурс. Используется",
                 "для тренировки сильных войск. Добывается в железных",
-                "жилах с пристроеным рудником."]
+                "рудниках."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -169,11 +168,10 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     elif x >= 800 and x <= 850 and y >= 10 and y <= 60:
         draw_board_ok = False
-        pygame.draw.rect(screen, (103, 0, 0), (850, 60, 450, 200))
-        info = ["Золото - используется для найма проф армии, для",
-                "развития науки и культуры и для постройки некоторых",
-                "зданий. Добывается в золотых жилах с пристроенным",
-                "рудником."]
+        pygame.draw.rect(screen, (103, 0, 0), (850, 60, 450, 150))
+        info = ["Золото - используется для найма проф армии,",
+                "и для постройки некоторых зданий. Добывается",
+                " Добывается в золотых рудниках"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -186,8 +184,8 @@ def show_info(coords, screen):
     elif x >= 1000 and x <= 1050 and y >= 10 and y <= 60:
         draw_board_ok = False
         pygame.draw.rect(screen, (103, 0, 0), (1050, 60, 450, 100))
-        info = ["Наука - изучайте улучшения, получайте бонусы.",
-                "Увеличивается специальными постройками."]
+        info = ["Наука - уеньшает жертвы от болезней. Уведичивается",
+                "постройкой университетов"]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -202,7 +200,7 @@ def show_info(coords, screen):
         pygame.draw.rect(screen, (103, 0, 0), (1250, 60, 475, 150))
         info = ["Население - главный фактор вашего города, из них",
                 "набирается армия, оно добывает ресурсы. Повышается от",
-                "избытка пищи и счастья."]
+                "избытка пищи."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -214,10 +212,9 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     elif x >= 1400 and x <= 1450 and y >= 10 and y <= 60:
         draw_board_ok = False
-        pygame.draw.rect(screen, (103, 0, 0), (1125, 60, 475, 150))
-        info = ["Счастье - влияет на добычу ресурсов, возникновение",
-                "восстаний и количество населения. Увеличивается",
-                "количеством ресурсов и постройкой культурных зданий."]
+        pygame.draw.rect(screen, (103, 0, 0), (1125, 60, 475, 100))
+        info = ["Счастье - влияет на добычу ресурсов и возникновение",
+                "восстаний. Увеличивается количеством ресурсов."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -413,10 +410,9 @@ class Raids:
                 population -= ((army_level * 100) / 2)
                 population -= (300 * (chance_remove - army_level))
 
-
 def global_changes():
     global food, population, populationplus, happiness, limit, chance_revolt, gold, food, wood, stone, iron, \
-        science, strange_infection, chance_raid
+        science, strange_infection, chance_raid, victims_of_infection
     populationplus = round((food - population) / 100)
     if round(food - population) > 1000 and happiness < 100 and limit > population:
         happiness += 1
@@ -428,7 +424,7 @@ def global_changes():
         chance_revolt = 0
         gold += 1
         population += 1
-        food += 1
+        food += 1 
         wood += 1
         stone += 1
         iron += 1
@@ -436,9 +432,10 @@ def global_changes():
         chance_raid += 1
     elif gold < 1000:
         chance_raid = 0
-    victims_of_infection = round(population / 100) * 10
-    victims_of_infection -= science
     population += populationplus
+    if victims_of_infection > 200:        # victims_of_infection = 200 где то там поменял
+        victims_of_infection = round(population / 100) * 10
+        victims_of_infection -= science
 
 
 def draw_board():
