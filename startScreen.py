@@ -187,19 +187,31 @@ def terminate():
     sys.exit()
 
 def start_screen():
-    intro_text = ['Проект утопия']
+    global maxdays
+    intro_text = ['Проект утопия', 'Максимально прожито дней:', str(maxdays)]
     size = WIDTH, HEIGHT = 900, 600
     screen = pygame.display.set_mode(size)
     fon = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT))
     pygame.font.get_fonts()
     font = pygame.font.SysFont('arial', 80)
+    font1 = pygame.font.SysFont('arial', 30)
     text_coord = 50
     string_rendered = font.render(intro_text[0], 1, (103, 0, 0))
     intro_rect = string_rendered.get_rect()
     intro_rect.top = text_coord
     intro_rect.x = 100
-    text_coord += intro_rect.height
     screen.blit(string_rendered, intro_rect)
+    text_coord = 200
+    string_rendered2 = font1.render(intro_text[1], 1, (103, 0, 0))
+    intro_rect2 = string_rendered2.get_rect()
+    intro_rect2.top = text_coord
+    intro_rect2.x = 375
+    screen.blit(string_rendered2, intro_rect2)
+    string_rendered1 = font1.render(intro_text[2], 1, (103, 0, 0))
+    intro_rect1 = string_rendered1.get_rect()
+    intro_rect1.top = text_coord
+    intro_rect1.x = 750
+    screen.blit(string_rendered, intro_rect1)
     btn_start = StartButton((100, 200), butHeigth=50, butWidth=250, text='Старт')
     btn_continue = ConButton((100, 500), butHeigth=50, butWidth=250, text='Продолжить')
     btn_desc = DescriptionButton((100, 350), butHeigth=50, butWidth=250, text='Описание')
@@ -211,6 +223,8 @@ def start_screen():
                 terminate()
         screen.blit(fon, (0, 0))
         screen.blit(string_rendered, intro_rect)
+        screen.blit(string_rendered1, intro_rect1)
+        screen.blit(string_rendered2, intro_rect2)
         btn_start.render(screen)
         btn_continue.render(screen)
         btn_desc.render(screen)
