@@ -17,6 +17,8 @@ type_goldmine = pg.USEREVENT + 10
 type_village = pg.USEREVENT + 11
 type_error = pg.USEREVENT
 type_event = pg.USEREVENT
+con = sqlite3.connect("data/Save.db")
+cur = con.cursor()
 
 grids = {(12, 4): True, (4, 0): True, (8, -9): False, (5, 1): True, (8, 0): True, (10, -3): True, (19, 0): False,
          (11, -4): True, (17, 3): True, (10, 6): True, (9, 8): False, (11, 5): True, (2, 2): False, (15, -4): False,
@@ -58,14 +60,13 @@ structures_save = copy.copy(grids)
 
 army = 0
 food, wood, stone, iron, gold, science, population, happiness, days, limit = \
-    500, 400, 200, 100, 200, 0, 300, 60, 0, 400
+    500, 400, 200, 100, 200, 0, 300, 60, 0, 500
 foodplus, woodplus, stoneplus, ironplus, goldplus, scienceplus, populationplus = 1, 1, 0, 0, 1, 0, 1
 structures = []
+maxdays = int(cur.execute("""SELECT maxdays FROM maxdays""").fetchall()[0][0])
+print(maxdays)
 for i in grids:
     structures_save[i] = 0
-con = sqlite3.connect("data/Save.db")
-cur = con.cursor()
-
 mountains = [(10, 10), (10, 9), (10, 8), (11, 10), (11, 9), (11, 8), (12, 9), (12, 8), (12, 7), (13, 8), (13, 7),
              (13, 6), (14, 6), (14, 7)]
 
