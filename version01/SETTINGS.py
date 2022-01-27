@@ -1,12 +1,24 @@
-import pygame as pg
+import pygame as pg, os, sys
+import copy
+import sqlite3
 
 TILE_SIZE = 100
 
-MYEVENTTYPE_farm = pg.USEREVENT + 1
-MYEVENTTYPE_castle = pg.USEREVENT + 2
-MYEVENTTYPE_ironmine = pg.USEREVENT + 3
-MYEVENTTYPE_ironmine_anim = pg.USEREVENT + 4
-MYEVENTTYPE_quarry = pg.USEREVENT + 5
+type_farm = pg.USEREVENT + 1
+type_castle = pg.USEREVENT + 2
+type_res = pg.USEREVENT + 3
+type_mill = pg.USEREVENT + 4
+type_days = pg.USEREVENT + 5
+type_quarry = pg.USEREVENT + 6
+type_ironmine = pg.USEREVENT + 7
+type_barracks = pg.USEREVENT + 8
+type_university = pg.USEREVENT
+type_goldmine = pg.USEREVENT + 10
+type_village = pg.USEREVENT + 11
+type_error = pg.USEREVENT
+type_event = pg.USEREVENT
+type_pausemenu = pg.USEREVENT
+type_endpause = pg.USEREVENT
 
 grids = {(12, 4): True, (4, 0): True, (8, -9): False, (5, 1): True, (8, 0): True, (10, -3): True, (19, 0): False,
          (11, -4): True, (17, 3): True, (10, 6): True, (9, 8): False, (11, 5): True, (2, 2): False, (15, -4): False,
@@ -44,9 +56,47 @@ grids = {(12, 4): True, (4, 0): True, (8, -9): False, (5, 1): True, (8, 0): True
          (10, 4): True, (1, 1): False, (11, 3): True, (2, 0): True, (9, 6): True, (13, 6): True, (15, 3): True,
          (6, 0): True, (12, -5): True, (12, -8): False}
 
+structures_save = copy.copy(grids)
+
+army = 0
+food, wood, stone, iron, gold, science, population, happiness, days, limit = \
+    500, 400, 200, 100, 200, 0, 300, 60, 0, 400
+foodplus, woodplus, stoneplus, ironplus, goldplus, scienceplus, populationplus = 1, 1, 0, 0, 1, 0, 1
+
+structures = []
+
+for i in grids:
+    structures_save[i] = 0
+con = sqlite3.connect("data/Save.db")
+cur = con.cursor()
+
+record = 0
+
+
+def load_image(name):
+    fullname = os.path.join('data/images', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл с изображением '{fullname}' не найден")
+        sys.exit()
+    image = pg.image.load(fullname)
+    return image
+
+
+def terminate():
+    con.close()
+    pg.quit()
+    sys.exit()
+
+
+pause_cycle, pause1_cycle, cont = False, False, False
+
+start = True
+
 mountains = [(10, 10), (10, 9), (10, 8), (11, 10), (11, 9), (11, 8), (12, 9), (12, 8), (12, 7), (13, 8), (13, 7),
              (13, 6), (14, 6), (14, 7)]
 
-filled_grids = []
+can_build, is_army, army_height, army_width, info_army, army_level, finish = True, False, 40, 400, [], 0, False
 
-can_build = True
+mouse, mouse1 = load_image('cursor.png'), load_image('cursor1.png')
+cursor_rect = mouse.get_rect()
+mouse_sprite = pg.sprite.Sprite()
