@@ -84,7 +84,6 @@ def saveGame():
             WHERE id > 1""")
 
     cur.execute(f"""DELETE FROM resourses WHERE id > 0""")
-    print(army, army_level, is_army)
     cur.execute(f"""INSERT INTO resourses(food, foodplus, wood, woodplus, stone, stoneplus, iron, ironplus,
              gold, goldplus, population, populationplus, happiness, science, scienceplus, limit1, days, army,
               army_level, is_army)
@@ -581,7 +580,7 @@ class BuildVillage(BUildFarm):
         if self.mouse_in(mousePos):
             pygame.draw.rect(screen, (103, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
-                global village, food, wood, type_village, can_build, grids, board, stone, gold, limit
+                global village, food, wood, type_village, can_build, grids, board, stone, gold, limit,warn, error, warn_word
                 if food >= 100 and wood >= 100 and stone >= 50 and gold >= 20:
                     village = Build(load_image('village.png'), 3, 1, self.pos[0], self.pos[1], all_sprites,
                                     type_village)
@@ -596,6 +595,11 @@ class BuildVillage(BUildFarm):
                     grids[board.grid_pos] = False
                     structures.append((village, self.pos[0], self.pos[1], self.cell, 'village'))
                     structures_save[self.cell] = ('village', self.pos[0], self.pos[1], self.cell)
+                else:
+                    pygame.time.set_timer(type_error, 3000)
+                    warn_word = "У вас недостаточно ресурсов для строительства!"
+                    menu.ok = False
+                    warn, error = True, True
         else:
             pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
 
@@ -981,7 +985,7 @@ for i in structures_save:
 board = Board(20, 20)
 # board.set_view(0, 0, 100)
 
-pygame.time.set_timer(type_res, 20000)
+pygame.time.set_timer(type_res, 10000)
 pygame.time.set_timer(type_days, 30000)
 
 menu = BuildMenu(screen, 0, 0, 0, 0, 0, 0, 0)
@@ -995,13 +999,12 @@ castle = Castle_cl(load_image('castle_anim2.png'), 5, 1, 960, 650, castle_sprite
 goldmine = Build(load_image('goldmine1.png'), 3, 1, -300, -300, all_sprites, type_goldmine)
 village = Build(load_image('village.png'), 3, 1, -300, -300, all_sprites, type_village)
 structures.append((castle, 960, 650, (12, 2), 'castle'))
-print(army, army_level, is_army)
 pygame.time.set_timer(type_event, 20000)
 pygame.time.set_timer(type_castle, 150)
 
-# pygame.mixer.music.load('data/music/witcher3.mp3')
-# pygame.mixer.music.set_volume(0.1)
-# pygame.mixer.music.play(-1)
+pygame.mixer.music.load('data/music/witcher3.mp3')
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play(-1)
 
 warn_width, warn_color, warn_word, farmcord, ironminecord, quarrycord, barrackscord = 340, (255, 0, 0), "", (0, 0), \
                                                                                       (0, 0), (0, 0), (0, 0)
