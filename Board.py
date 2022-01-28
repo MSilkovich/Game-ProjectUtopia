@@ -1,9 +1,10 @@
 import pygame as pg
-from settings import TILE_SIZE
+from SETTINGS import TILE_SIZE
 
 
 class Board:
-    def __init__(self, width, height, grid_length_x=21, grid_length_y=20, left=10, top=10):
+    def __init__(self, width, height, grid_length_x=21, grid_length_y=20,
+                 left=10, top=10):
         self.grid_length_x = grid_length_x
         self.grid_length_y = grid_length_y
         self.width = width
@@ -22,12 +23,12 @@ class Board:
         mouse_pos = pg.mouse.get_pos()
         self.grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1])
         try:
-            iso_poly = self.world[self.grid_pos[0]][self.grid_pos[1]]["iso_poly"]
+            self.iso_poly = self.world[self.grid_pos[0]][self.grid_pos[1]]["iso_poly"]
             self.temp_tile = {
-                "iso_poly": iso_poly
+                "iso_poly": self.iso_poly
             }
         except IndexError:
-                pass
+            pass
 
     def set_view(self, left, top, cell_size):
         self.left = left
@@ -89,105 +90,105 @@ class Board:
         return grid_x, grid_y
 
     def draw(self, screen):
-        for x in range(self.grid_length_x):
-            for y in range(self.grid_length_y):
-
-                p = self.world[x][y]["iso_poly"]
-                p = [(x + self.width / 2, y + self.height / 4) for x, y in p]
-                # pygame.draw.polygon(screen, (255, 0, 0), p, 1) # drawing grid
+        # for x in range(self.grid_length_x):
+        #     for y in range(self.grid_length_y):
+        #
+        #         p = self.world[x][y]["iso_poly"]
+        #         p = [(x + self.width / 2, y + self.height / 4) for x, y in p]
+        #         pygame.draw.polygon(screen, (255, 0, 0), p, 1) # drawing grid
 
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
-            iso_poly1 = [(x - 990, y + 305) for x, y in iso_poly] # left_side первая координата - нижний угол, вторая - правый угол, третья - верхний угол, четвертая - левый угол
-            iso_poly2 = [(x + 1010, y - 695) for x, y in iso_poly] # right_side первая координата - нижний угол, вторая - правый угол, третья - верхний угол, четвертая - левый угол
+            self.iso_poly1 = [(x - 990, y + 305) for x, y in iso_poly] # left_side первая координата - нижний угол, вторая - правый угол, третья - верхний угол, четвертая - левый угол
+            self.iso_poly2 = [(x + 1010, y - 695) for x, y in iso_poly] # right_side первая координата - верхний угол, вторая - правый угол, третья - нижний угол, четвертая - левый угол
             if self.grid_pos[1] <= -1:
                 if self.grid_pos[0] == 19 and self.grid_pos[1] <= -1:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 18 and self.grid_pos[1] <= -1:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 17 and self.grid_pos[1] <= -2:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 16 and self.grid_pos[1] <= -3:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 15 and self.grid_pos[1] <= -4:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 14 and self.grid_pos[1] <= -5:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 13 and self.grid_pos[1] <= -6:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 12 and self.grid_pos[1] <= -7:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 11 and self.grid_pos[1] <= -8:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 10 and self.grid_pos[1] <= -9:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 9 and self.grid_pos[1] <= -8:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 8 and self.grid_pos[1] <= -7:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 7 and self.grid_pos[1] <= -6:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 6 and self.grid_pos[1] <= -5:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 5 and self.grid_pos[1] <= -4:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 4 and self.grid_pos[1] <= -3:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 3 and self.grid_pos[1] <= -2:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 2 and self.grid_pos[1] <= -1:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 1 and self.grid_pos[1] <= -1:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 elif self.grid_pos[0] == 0 and self.grid_pos[1] <= -1:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly2, 3)
                 else:
-                    pg.draw.polygon(screen, (255, 255, 255), iso_poly2, 3)
+                    pg.draw.polygon(screen, (255, 255, 255), self.iso_poly2, 3)
 
             elif self.grid_pos[1] >= 0:
                 if self.grid_pos[0] == 20 and self.grid_pos[1] <= 1:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 19 and self.grid_pos[1] == 0:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 19 and self.grid_pos[1] == 2:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 18 and self.grid_pos[1] <= 3 and self.grid_pos[1] > 1:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 17 and self.grid_pos[1] == 4:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
-                elif self.grid_pos[0] == 16 and self.grid_pos[1] == 5:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
-                elif self.grid_pos[0] == 15 and self.grid_pos[1] == 6:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
-                elif self.grid_pos[0] == 14 and self.grid_pos[1] == 7:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
-                elif self.grid_pos[0] == 13 and self.grid_pos[1] == 8:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
-                elif self.grid_pos[0] == 12 and self.grid_pos[1] == 9:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
-                elif self.grid_pos[0] == 11 and self.grid_pos[1] == 10:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
-                elif self.grid_pos[0] == 10 and self.grid_pos[1] == 10:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
+                elif self.grid_pos[0] == 16 and (self.grid_pos[1] == 5 or self.grid_pos[1] == 4):
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
+                elif self.grid_pos[0] == 15 and (self.grid_pos[1] == 6 or self.grid_pos[1] == 5):
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
+                elif self.grid_pos[0] == 14 and (self.grid_pos[1] == 7):
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
+                elif self.grid_pos[0] == 13 and (self.grid_pos[1] == 8):
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
+                elif self.grid_pos[0] == 12 and (self.grid_pos[1] == 9 or self.grid_pos[1] == 7):
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
+                elif self.grid_pos[0] == 11 and (self.grid_pos[1] == 10):
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
+                elif self.grid_pos[0] == 10 and (self.grid_pos[1] == 10 or self.grid_pos[1] == 8):
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 9 and self.grid_pos[1] >= 8:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 8 and self.grid_pos[1] == 8:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 7 and self.grid_pos[1] == 7:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 6 and self.grid_pos[1] == 6:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 5 and self.grid_pos[1] == 5:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 4 and self.grid_pos[1] == 4:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 3 and self.grid_pos[1] == 3:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 2 and self.grid_pos[1] == 2:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 1 and self.grid_pos[1] <= 1:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 elif self.grid_pos[0] == 0 and self.grid_pos[1] == 0:
-                    pg.draw.polygon(screen, (255, 0, 0), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 0, 0), self.iso_poly1, 3)
                 else:
-                    pg.draw.polygon(screen, (255, 255, 255), iso_poly1, 3)
+                    pg.draw.polygon(screen, (255, 255, 255), self.iso_poly1, 3)
