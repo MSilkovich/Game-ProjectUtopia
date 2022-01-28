@@ -1,17 +1,22 @@
-fimport random
+import pygame.sprite
 
+from startScr import start_screen
 from Board import Board
 from Buildings import *
-from SETTINGS import *
-from startScr import start_screen
+import random
+from setting_classes import *
 
+pg.mouse.set_visible(False)
 pygame.init()
 clock = pygame.time.Clock()
-start = True
+# start = True
 n, warn, draw_board_ok, error = 0, False, True, False
 structures = []
 all_sprites = pygame.sprite.Group()
 castle_sprites = pygame.sprite.Group()
+pausemenu_sprites = pygame.sprite.Group()
+
+running = True
 
 FPS = 50
 
@@ -20,13 +25,12 @@ start_screen()
 size = WIDTH, HEIGHT = 1920, 1080
 screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
-ersourses, buildings = [], []
+resourses, buildings = [], []
 
 chance_revolt, chance_raid = 0, 0
 victims_of_infection = 200
 strange_infection = 5
 
-running = True
 y, v = 10, 20
 
 
@@ -72,16 +76,21 @@ def draw_rect(spis):
 def saveGame():
     global structures_save, days, maxdays
     limit1 = limit
-    print(days, maxdays)
+
     if days > maxdays:
         cur.execute(f"""UPDATE maxdays SET maxdays = {days} WHERE id = 1""")
+
     cur.execute(f"""DELETE FROM Buildings 
             WHERE id > 1""")
+
     cur.execute(f"""DELETE FROM resourses WHERE id > 0""")
+    print(army, army_level, is_army)
     cur.execute(f"""INSERT INTO resourses(food, foodplus, wood, woodplus, stone, stoneplus, iron, ironplus,
-             gold, goldplus, population, populationplus, happiness, science, scienceplus, limit1, days)
+             gold, goldplus, population, populationplus, happiness, science, scienceplus, limit1, days, army,
+              army_level, is_army)
              VALUES ({food}, {foodplus}, {wood}, {woodplus}, {stone}, {stoneplus}, {iron}, {ironplus}, {gold}
-             , {goldplus}, {population}, {populationplus}, {happiness}, {science}, {scienceplus}, {limit1}, {days})""")
+             , {goldplus}, {population}, {populationplus}, {happiness}, {science}, {scienceplus}, {limit1}, {days}, 
+             {army}, {army_level}, {is_army})""")
     for i in structures_save:
         if structures_save[i] != 0:
             type1 = structures_save[i][0]
@@ -99,12 +108,6 @@ def draw_polygon(spis):
     pygame.draw.polygon(spis[0], spis[1], spis[2], spis[3])
 
 
-def terminate():
-    con.close()
-    pygame.quit()
-    sys.exit()
-
-
 def show_info(coords, screen):
     x = coords[0]
     y = coords[1]
@@ -115,8 +118,8 @@ def show_info(coords, screen):
         pygame.draw.rect(screen, (103, 0, 0), (50, 60, 450, 200))
         info = ["Пища - сновной ресурс для выживания вашего города.",
                 "Количество пищи влияет на численность населения и",
-                "его состояние. Пища используется для найма армии и",
-                "строительства."]
+                "его состояние. Пища используется для найма армии,",
+                "строительства, развития науки и культуры."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -131,7 +134,7 @@ def show_info(coords, screen):
         pygame.draw.rect(screen, (103, 0, 0), (250, 60, 450, 150))
         info = ["Древесина - основной строительный материал вашего",
                 "города, из древесины строятся основные экономические",
-                "здания. Древесину можно добыть в лесопилках."]
+                "здания. Древесину можно добыть в лесах."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -143,9 +146,10 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     elif x >= 400 and x <= 450 and y >= 10 and y <= 60:
         draw_board_ok = False
-        pygame.draw.rect(screen, (103, 0, 0), (450, 60, 475, 100))
+        pygame.draw.rect(screen, (103, 0, 0), (450, 60, 475, 150))
         info = ["Камень - строительный ресурс для некоторых ",
-                "сооружений. Добывается в карьерах"]
+                "сооружений и улучшения стен в поздней игре. Добывается",
+                "в каменных залежах с пристроенным карьером."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -160,7 +164,7 @@ def show_info(coords, screen):
         pygame.draw.rect(screen, (103, 0, 0), (650, 60, 450, 150))
         info = ["Железо - полезный стратегический ресурс. Используется",
                 "для тренировки сильных войск. Добывается в железных",
-                "рудниках."]
+                "жилах с пристроеным рудником."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -172,10 +176,11 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     elif x >= 800 and x <= 850 and y >= 10 and y <= 60:
         draw_board_ok = False
-        pygame.draw.rect(screen, (103, 0, 0), (850, 60, 450, 150))
-        info = ["Золото - используется для найма проф армии,",
-                "и для постройки некоторых зданий. Добывается",
-                " Добывается в золотых рудниках"]
+        pygame.draw.rect(screen, (103, 0, 0), (850, 60, 450, 200))
+        info = ["Золото - используется для найма проф армии, для",
+                "развития науки и культуры и для постройки некоторых",
+                "зданий. Добывается в золотых жилах с пристроенным",
+                "рудником."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -188,8 +193,8 @@ def show_info(coords, screen):
     elif x >= 1000 and x <= 1050 and y >= 10 and y <= 60:
         draw_board_ok = False
         pygame.draw.rect(screen, (103, 0, 0), (1050, 60, 450, 100))
-        info = ["Наука - уеньшает жертвы от болезней. Уведичивается",
-                "постройкой университетов"]
+        info = ["Наука - изучайте улучшения, получайте бонусы.",
+                "Увеличивается специальными постройками."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -204,7 +209,7 @@ def show_info(coords, screen):
         pygame.draw.rect(screen, (103, 0, 0), (1250, 60, 475, 150))
         info = ["Население - главный фактор вашего города, из них",
                 "набирается армия, оно добывает ресурсы. Повышается от",
-                "избытка пищи."]
+                "избытка пищи и счастья."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -216,9 +221,10 @@ def show_info(coords, screen):
             screen.blit(string_rendered, intro_rect)
     elif x >= 1400 and x <= 1450 and y >= 10 and y <= 60:
         draw_board_ok = False
-        pygame.draw.rect(screen, (103, 0, 0), (1125, 60, 475, 100))
-        info = ["Счастье - влияет на добычу ресурсов и возникновение",
-                "восстаний. Увеличивается количеством ресурсов."]
+        pygame.draw.rect(screen, (103, 0, 0), (1125, 60, 475, 150))
+        info = ["Счастье - влияет на добычу ресурсов, возникновение",
+                "восстаний и количество населения. Увеличивается",
+                "количеством ресурсов и постройкой культурных зданий."]
         font = pygame.font.SysFont('arial', 20)
         for i in info:
             string_rendered = font.render(i, True, (255, 255, 255))
@@ -287,6 +293,10 @@ def show_info(coords, screen):
             coords += 20
             coords += intro_rect.height
             screen.blit(string_rendered, intro_rect)
+        if pygame.mouse.get_pressed()[0]:
+            global pause_cycle
+            pause_cycle = True
+
     elif x >= 50 and x <= 199 and y >= 10 and y <= 60:
         draw_board_ok = False
     elif x >= 250 and x <= 400 and y >= 10 and y <= 60:
@@ -419,10 +429,12 @@ def global_changes():
     global food, population, populationplus, happiness, limit, chance_revolt, gold, food, wood, stone, iron, \
         science, strange_infection, chance_raid, victims_of_infection
     populationplus = round((food - population) / 100)
-    if round(food - population) > 100 and happiness < 100 and limit > population:
+
+    if round(food - population) > 300 and happiness < 100 and limit > population:
         happiness += 0.3
-    elif ((population - food) > 500) or (limit - population < 100) and happiness > 0:
+    elif ((population - food) > 100) or (limit - population < 100) and happiness > 0:
         happiness -= 0.3
+
     if happiness < 50:
         chance_revolt += 1
     elif happiness > 75:
@@ -438,7 +450,7 @@ def global_changes():
     elif gold < 1000:
         chance_raid = 0
     population += populationplus
-    if victims_of_infection > 200:
+    if victims_of_infection > 200:        # victims_of_infection = 200 где то там поменял
         victims_of_infection = round(population / 100) * 10
         victims_of_infection -= science
 
@@ -539,7 +551,7 @@ class BuildIronMine(BUildFarm):
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
                 global ironmine, food, wood, type_ironmine, can_build, grids, board, warn, warn_word, error
                 if food >= 175 and wood >= 125:
-                    ironmine = Build(load_image('ironmine.png'), 3, 1, self.pos[0], self.pos[1], all_sprites,
+                    ironmine = Build(load_image('ironmine1.png'), 3, 1, self.pos[0], self.pos[1], all_sprites,
                                      type_ironmine)
                     pygame.time.set_timer(type_ironmine, 7000)
                     menu.ok = False
@@ -569,7 +581,7 @@ class BuildVillage(BUildFarm):
         if self.mouse_in(mousePos):
             pygame.draw.rect(screen, (103, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
-                global village, food, wood, type_village, can_build, grids, board, stone, gold
+                global village, food, wood, type_village, can_build, grids, board, stone, gold, limit
                 if food >= 100 and wood >= 100 and stone >= 50 and gold >= 20:
                     village = Build(load_image('village.png'), 3, 1, self.pos[0], self.pos[1], all_sprites,
                                     type_village)
@@ -579,6 +591,7 @@ class BuildVillage(BUildFarm):
                     wood -= 100
                     stone -= 50
                     gold -= 20
+                    limit += 1000
                     can_build = False
                     grids[board.grid_pos] = False
                     structures.append((village, self.pos[0], self.pos[1], self.cell, 'village'))
@@ -608,7 +621,7 @@ class BuildQuarry(BUildFarm):
                     wood -= 125
                     can_build = False
                     grids[board.grid_pos] = False
-                    structures.append((quarry, self.pos[0], self.pos[1], self.cell, 'quarry'))
+                    structures.append((quarry, self.pos[0], self.pos[1],self.cell, 'quarry'))
                     structures_save[self.cell] = ('quarry', self.pos[0], self.pos[1], self.cell)
                 else:
                     pygame.time.set_timer(type_error, 3000)
@@ -728,7 +741,7 @@ class BuildMenu:
         self.goldmine = ['Золотой -', '-175', '-200', 'рудник', '-100']
         self.village = ['Поселение -', '-100', '-100', '-50', '-20']
         self.barracks = ['Казармы - ', '- 300', '- 225', ' - 150', '-100']
-        self.university = ['Университет -', '- 300', '- 225', '- 500', '-300']
+        self.university = ['Университет -', '- 300', '- 225', '- 500', '- 300']
         self.fdres = load_image('foodres.png')
         self.wdres = load_image('woodres.png')
         self.ok = False
@@ -791,6 +804,7 @@ class BuildMenu:
                 set_text(self.village[1], x + 130, self.y + 190)
                 set_text(self.village[2], x + 130, self.y + 220)
                 set_text(self.village[3], x + 130, self.y + 250)
+                set_text(self.village[4], x + 130, self.y + 280)
                 butbrc = BuildBarracks(position=(x + 190, self.y + 5), butHeigth=120, butWidth=175, text='')
                 butbrc.render(self.screen)
                 self.screen.blit(self.fdres, (x + 260, self.y + 10))
@@ -799,15 +813,15 @@ class BuildMenu:
                 self.screen.blit(self.gldres, (x + 260, self.y + 100))
                 set_text(self.barracks[0], x + 190, self.y + 10)
                 set_text(self.barracks[1], x + 310, self.y + 10)
-                set_text(self.barracks[2], x + 310, self.y + 30)
-                set_text(self.barracks[3], x + 310, self.y + 70)
+                set_text(self.barracks[2], x + 310, self.y + 40)
+                set_text(self.barracks[3], x + 305, self.y + 70)
                 set_text(self.barracks[4], x + 310, self.y + 100)
                 butuni = BuildUniversity(position=(x + 190, self.y + 125), butHeigth=120, butWidth=175, text='')
                 butuni.render(self.screen)
-                self.screen.blit(self.fdres, (x + 280, self.y + 130))
-                self.screen.blit(self.wdres, (x + 280, self.y + 160))
-                self.screen.blit(self.stnres, (x + 280, self.y + 190))
-                self.screen.blit(self.gldres, (x + 280, self.y + 220))
+                self.screen.blit(self.fdres, (x + 295, self.y + 130))
+                self.screen.blit(self.wdres, (x + 295, self.y + 160))
+                self.screen.blit(self.stnres, (x + 295, self.y + 190))
+                self.screen.blit(self.gldres, (x + 295, self.y + 220))
                 set_text(self.university[0], x + 190, self.y + 130)
                 set_text(self.university[1], x + 330, self.y + 130)
                 set_text(self.university[2], x + 330, self.y + 160)
@@ -865,6 +879,15 @@ class BuildMenu:
                 self.ok = False
 
 
+def Plauge(plaugers):
+    chanse = random.randint(0, 100)
+    global population
+    if chanse < 5:
+        population -= population // 2
+    elif chanse < 25:
+        population -= plaugers
+
+
 def set_text(text, x, y):
     font = pygame.font.SysFont('arial', 16)
     string_rendered = font.render(text, True, (255, 255, 255))
@@ -874,14 +897,39 @@ def set_text(text, x, y):
     screen.blit(string_rendered, intro_rect)
 
 
-def Plauge(plaugers):
-    chanse = random.randint(0, 100)
-    global population
-    if chanse < 5:
-        population -= population // 2
-    elif chanse < 25:
-        population -= plaugers
+# def fade(width, height):
+#     fade = pygame.Surface((width, height))
+#     fade.fill((0, 0, 0, 0.5))
+#     for alpha in range(0, 1000000000000000):
+#         fade.set_alpha(alpha)
+#         redrawWindow()
+#         screen.blit(fade, (0, 0))
+#         pygame.display.update()
+#         pygame.time.delay(5)
+#
+#
+def redrawWindow():
+    update_bg()
+    draw_sprites()
+    castle_sprites.draw(screen)
+    coords = 80
+    x = 0
+    for i in range(0, len(resourses)):
+        screen.blit(resourses[i], (x, y))
+        if i != len(resourses) - 1:
+            pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 150, 50), 1)
+            pygame.draw.rect(screen, (47, 27, 0), (x + 51, y + 1, 198, 48), 1)
+            pygame.draw.rect(screen, (103, 0, 0), (x + 52, y + 2, 196, 46))
+        x += 200
 
+    for i in res_values:
+        string_rendered = font.render(i, True, (255, 255, 255))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.top = 10
+        intro_rect.x = coords
+        coords += 152
+        coords += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
 
 
 def draw_sprites():
@@ -904,11 +952,9 @@ for i in structures_save:
         elif a[0] == 'goldmine':
             all_sprites.add(Build(load_image('finishedgoldmine.png'), 1, 1, a[1], a[2], all_sprites, type_goldmine))
         elif a[0] == 'university':
-            all_sprites.add(
-                Build(load_image('finisheduniversity.png'), 1, 1, a[1], a[2] - 20, all_sprites, type_university))
+            all_sprites.add(Build(load_image('finisheduniversity.png'), 1, 1, a[1], a[2] - 20, all_sprites, type_university))
         elif a[0] == 'barracks':
-            all_sprites.add(
-                Build(load_image('finishedbarracks.png'), 1, 1, a[1], a[2] - 30, all_sprites, type_barracks))
+            all_sprites.add(Build(load_image('finishedbarracks.png'), 1, 1, a[1], a[2] - 30, all_sprites, type_barracks))
 
         food = cur.execute('''SELECT food FROM resourses''').fetchall()[0][0]
         foodplus = cur.execute('''SELECT foodplus FROM resourses''').fetchall()[0][0]
@@ -927,462 +973,688 @@ for i in structures_save:
         happiness = cur.execute('''SELECT happiness FROM resourses''').fetchall()[0][0]
         limit = cur.execute('''SELECT limit1 FROM resourses''').fetchall()[0][0]
         days = cur.execute('''SELECT days FROM resourses''').fetchall()[0][0]
+        army = cur.execute('''SELECT army FROM resourses''').fetchall()[0][0]
+        army_level = cur.execute('''SELECT army_level FROM resourses''').fetchall()[0][0]
+        is_army = cur.execute('''SELECT is_army FROM resourses''').fetchall()[0][0]
+
 
 board = Board(20, 20)
 # board.set_view(0, 0, 100)
 
-pygame.time.set_timer(type_res, 1000)
-pygame.time.set_timer(type_days, 60000)
+pygame.time.set_timer(type_res, 20000)
+pygame.time.set_timer(type_days, 30000)
 
 menu = BuildMenu(screen, 0, 0, 0, 0, 0, 0, 0)
 farm = Build(load_image('farm_3.png'), 3, 1, -300, -300, all_sprites, type_farm)
 mill = Build(load_image('mill.png'), 3, 1, -300, -300, all_sprites, type_mill)
 ironmine = Build(load_image('ironmine.png'), 3, 1, -300, -300, all_sprites, type_ironmine)
 quarry = Build(load_image('quarry.png'), 3, 1, -300, -300, all_sprites, type_quarry)
-goldmine = Build(load_image('goldmine1.png'), 3, 1, -300, -300, all_sprites, type_goldmine)
-village = Build(load_image('village.png'), 3, 1, -300, -300, all_sprites, type_village)
 barracks = Build(load_image('barracks.png'), 3, 1, -300, -300, all_sprites, type_barracks)
 university = Build(load_image('university.png'), 3, 1, -300, -300, all_sprites, type_university)
 castle = Castle_cl(load_image('castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
+goldmine = Build(load_image('goldmine1.png'), 3, 1, -300, -300, all_sprites, type_goldmine)
+village = Build(load_image('village.png'), 3, 1, -300, -300, all_sprites, type_village)
 structures.append((castle, 960, 650, (12, 2), 'castle'))
-
+print(army, army_level, is_army)
 pygame.time.set_timer(type_event, 20000)
 pygame.time.set_timer(type_castle, 150)
 
 # pygame.mixer.music.load('data/music/witcher3.mp3')
-# pygame.mixer.music.set_volume(0.05)
+# pygame.mixer.music.set_volume(0.1)
 # pygame.mixer.music.play(-1)
 
 warn_width, warn_color, warn_word, farmcord, ironminecord, quarrycord, barrackscord = 340, (255, 0, 0), "", (0, 0), \
                                                                                       (0, 0), (0, 0), (0, 0)
 
+
+class ContButton(QuitButton):
+    def __init__(self, position: tuple, butHeigth: int = 40, butWidth: int = 150, text: str = "Кнопка"):
+        super().__init__(position)
+        self.position = position
+        self.width = butWidth
+        self.heigth = butHeigth
+        self.text = text
+
+    def render(self, screen):
+        mousePos = pygame.mouse.get_pos()
+        if self.mouse_in(mousePos):
+            pygame.draw.rect(screen, (90, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+            if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
+                pygame.draw.rect(screen, (51, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+                global pause1_cycle, pause_cycle
+                pause1_cycle = True
+                pause_cycle = False
+        else:
+            pygame.draw.rect(screen, (122, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+        self.font = pygame.font.Font(pygame.font.get_default_font(), 23)
+        valueSurf = self.font.render(f"{self.text}", True, (255, 255, 255))
+        textx = self.position[0] + (self.width / 2) - (valueSurf.get_rect().width / 2)
+        texty = self.position[1] + (self.heigth / 2) - (valueSurf.get_rect().height / 2)
+        screen.blit(valueSurf, (textx, texty))
+
+
+class QuitMenuButton(QuitButton):
+    def __init__(self, position: tuple, butHeigth: int = 40, butWidth: int = 150, text: str = "Кнопка"):
+        super().__init__(position)
+        self.position = position
+        self.width = butWidth
+        self.heigth = butHeigth
+        self.text = text
+
+    def render(self, screen):
+        mousePos = pygame.mouse.get_pos()
+        if self.mouse_in(mousePos):
+            pygame.draw.rect(screen, (90, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+            if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
+                pygame.draw.rect(screen, (51, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+                global start, pause_cycle, pause1_cycle, running
+                start = True
+                print(start)
+                pause1_cycle, pause_cycle = False, False
+                start_screen()
+        else:
+            pygame.draw.rect(screen, (122, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+        self.font = pygame.font.Font(pygame.font.get_default_font(), 23)
+        valueSurf = self.font.render(f"{self.text}", True, (255, 255, 255))
+        textx = self.position[0] + (self.width / 2) - (valueSurf.get_rect().width / 2)
+        texty = self.position[1] + (self.heigth / 2) - (valueSurf.get_rect().height / 2)
+        screen.blit(valueSurf, (textx, texty))
+
+
+class SaveButton(QuitButton):
+    def __init__(self, position: tuple, butHeigth: int = 40, butWidth: int = 150, text: str = "Кнопка"):
+        super().__init__(position)
+        self.position = position
+        self.width = butWidth
+        self.heigth = butHeigth
+        self.text = text
+
+    def render(self, screen):
+        mousePos = pygame.mouse.get_pos()
+        if self.mouse_in(mousePos):
+            pygame.draw.rect(screen, (90, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+            if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
+                pygame.draw.rect(screen, (51, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+                saveGame()
+        else:
+            pygame.draw.rect(screen, (122, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
+        self.font = pygame.font.Font(pygame.font.get_default_font(), 23)
+        valueSurf = self.font.render(f"{self.text}", True, (255, 255, 255))
+        textx = self.position[0] + (self.width / 2) - (valueSurf.get_rect().width / 2)
+        texty = self.position[1] + (self.heigth / 2) - (valueSurf.get_rect().height / 2)
+        screen.blit(valueSurf, (textx, texty))
+
+
+class Slider:
+    def __init__(self, position: tuple, upperValue: int = 90, sliderWidth: int = 150,
+                 text: str = "Сергей Мульганов",
+                 outlineSize: tuple = (300, 30)) -> None:
+        self.position = position
+        self.outlineSize = outlineSize
+        self.text = text
+        self.sliderWidth = sliderWidth
+        self.upperValue = upperValue
+
+    # returns the current value of the slider
+    def getValue(self) -> float:
+        return self.sliderWidth / (self.outlineSize[0] / self.upperValue)
+
+    # renders slider and the text showing the value of the slider
+    def render(self, screen) -> None:
+        # draw outline and slider rectangles
+        pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1],
+                                             self.outlineSize[0], self.outlineSize[1]), 3)
+
+        pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1],
+                                             self.sliderWidth, self.outlineSize[1]))
+
+        # determite size of font
+        self.font = pygame.font.Font(pygame.font.get_default_font(), 12)
+
+        # create text surface with value
+        valueSurf = self.font.render(f"{self.text}: {round(self.getValue())}", True, (255, 0, 0))
+
+        # centre text
+        textx = self.position[0] + (self.outlineSize[0] / 2) - (valueSurf.get_rect().width / 2)
+        texty = self.position[1] + (self.outlineSize[1] / 2) - (valueSurf.get_rect().height / 2)
+
+        screen.blit(valueSurf, (textx, texty))
+
+    # allows users to change value of the slider by dragging it.
+    def changeValue(self) -> None:
+        # If mouse is pressed and mouse is inside the slider
+        mousePos = pygame.mouse.get_pos()
+        if self.pointInRectanlge(mousePos):
+            if pygame.mouse.get_pressed()[0]:
+                # the size of the slider
+                self.sliderWidth = mousePos[0] - self.position[0]
+                # limit the size of the slider
+                if self.sliderWidth < 1:
+                    self.sliderWidth = 0
+                if self.sliderWidth > self.outlineSize[0]:
+                    self.sliderWidth = self.outlineSize[0]
+
+    def pointInRectanlge(self, p):
+        px, py = p
+        rw, rh, rx, ry = self.outlineSize[0], self.outlineSize[1], self.position[0], self.position[1]
+        if px > rx and px < rx + rw:
+            if py > ry and py < ry + rh:
+                return True
+        return False
+
+
+
+
 while running:
-    x = 0
-    warn_rect, warn_polygon = [], []
+    cursor_rect.center = pygame.mouse.get_pos()
 
-    update_bg()
+    if not pause_cycle and not pause1_cycle:
+        x = 0
+        warn_rect, warn_polygon = [], []
 
-    if finish:
-        print('finish')
-        terminate()
+        update_bg()
 
-    if menu.ok:
-        draw_polygon([screen, (255, 255, 255), board.iso_poly1, 3])
-        draw_polygon([screen, (255, 255, 255), board.iso_poly2, 3])
-
-    if not warn and not menu.ok:
-        if draw_board_ok:
-            draw_board()
-
-    if warn:
-        info = [warn_word]
-
-        if board.grid_pos in buildings and can_build == False:
-            info = ["Сейчас строится здание, подождите!"]
-        # elif board.grid_pos in buildings and can_build == True:
-        #     info = ["На этом месте уже стоит постройка!"]
-
-        if info[0] == "Сейчас строится здание, подождите!":
-            warn_width = 350
-        elif info[0] == "На этом месте уже стоит постройка!":
-            warn_width = 350
-        elif info[0] == "Вы не можете строить здание на этой территории!":
-            warn_width = 480
-        elif info[0] == "Вы не можете строить рудники не в горах!":
-            warn_width = 400
-        elif info[0] == "Вы не можете строить ферму в горах!":
-            warn_width = 360
-        elif info[0] == "У вас недостаточно ресурсов для строительства!":
-            warn_width = 470
-
-        mx, my = pygame.mouse.get_pos()
-
-        if board.grid_pos[1] < 0 and not ((board.grid_pos[0] == 1 or board.grid_pos[0] == 0 or board.grid_pos[0] == 2
-                                           or board.grid_pos[0] == 3) and board.grid_pos[1] == -1) and not \
-                ((board.grid_pos[0] == 3 or board.grid_pos[0] == 2) and board.grid_pos[1] == -2) and not \
-                ((board.grid_pos[0] == 4 or board.grid_pos[0] == 3) and board.grid_pos[1] == -3) and not \
-                ((board.grid_pos[0] == 4 or board.grid_pos[0] == 3 or board.grid_pos[0] == 5) and
-                 board.grid_pos[1] == -4) and not ((board.grid_pos[0] == 5 or board.grid_pos[0] == 6) and
-                                                   board.grid_pos[1] == -5) and not (
-                (board.grid_pos[0] == 7 or board.grid_pos[0] == 6) and
-                board.grid_pos[1] == -6) and not ((board.grid_pos[0] == 7 or board.grid_pos[0] == 8) and
-                                                  board.grid_pos[1] == -7) and not (
-                (board.grid_pos[0] == 8 or board.grid_pos[0] == 9) and
-                board.grid_pos[1] == -8) and not ((board.grid_pos[0] == 10 or board.grid_pos[0] == 9) and
-                                                  board.grid_pos[1] == -9):  # iso_poly2
-            coords1 = board.iso_poly2[3]
-            rx, ry = coords1
-            if ((mx > rx + 200) or (mx < rx - warn_width) or (my > ry + 53) or (my < ry - 53)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = -34, 5 - warn_width
-            warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 50, 200 + warn_width, 100), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif board.grid_pos[0] == 3 and board.grid_pos[1] == -1:
-            coords1 = board.iso_poly2[3]
-            rx, ry = coords1
-            if ((mx > rx + warn_width + 200) or (mx < rx) or (my > ry + 53) or (my < ry - 53)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = -34, 205
-            warn_rect = [screen, (103, 0, 0), (rx + 200, ry - 35, warn_width, 35), ry, rx, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx, ry - 50, 200 + warn_width, 100), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 17 and board.grid_pos[1] <= 3) or \
-                (board.grid_pos[0] == 18 and board.grid_pos[1] <= 3) or \
-                (board.grid_pos[0] == 19 and board.grid_pos[1] <= 3) or \
-                (board.grid_pos[0] == 20 and board.grid_pos[1] <= 3) or \
-                (board.grid_pos[0] == 11 and board.grid_pos[1] == 3):
-            coords1 = board.iso_poly1[3]
-            rx, ry = coords1
-            if ((mx > rx + 200) or (mx < rx - warn_width) or (my > ry + 53) or (my < ry - 53)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = -34, 5 - warn_width
-            warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 50, 200 + warn_width, 100), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
-
-        elif ((board.grid_pos[0] == 0 or board.grid_pos[0] == 1) and board.grid_pos[1] == 0) or \
-                (board.grid_pos[0] == 1 and board.grid_pos[1] == 1):  # draw right down iso_poly1
-            coords1 = board.iso_poly1[0]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 123) or (my < ry)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 105, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry + 100, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry, warn_width + 100, 135), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
-
-        elif board.grid_pos[0] == 2 and (board.grid_pos[1] == 1 or board.grid_pos[1] == 2):
-            coords1 = board.iso_poly1[0]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 123) or (my < ry)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 105, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry + 100, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry, warn_width + 100, 135), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
-
-        elif (board.grid_pos[0] == 1 or board.grid_pos[0] == 0 or board.grid_pos[0] == 2) \
-                and (board.grid_pos[1] == -1):  # right iso_poly2
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 2 or board.grid_pos[0] == 3) and board.grid_pos[1] == -2:
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 3 or board.grid_pos[0] == 4) and board.grid_pos[1] == -3:
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 3 or board.grid_pos[0] == 4 or board.grid_pos[0] == 5) and board.grid_pos[1] == -4:
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 5 or board.grid_pos[0] == 6) and board.grid_pos[1] == -5:
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 7 or board.grid_pos[0] == 6) and board.grid_pos[1] == -6:
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 8 or board.grid_pos[0] == 7) and board.grid_pos[1] == -7:
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 8 or board.grid_pos[0] == 9) and board.grid_pos[1] == -8:
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + 100) or (mx < rx - warn_width) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, -warn_width
-            warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 10 or board.grid_pos[0] == 9) and board.grid_pos[1] == -9:
-            coords1 = board.iso_poly2[2]
-            rx, ry = coords1
-            if ((mx > rx + 100) or (mx < rx - warn_width) or (my > ry + 34) or (my < ry - 83)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = 8, -warn_width
-            warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 100, warn_width + 102, 136), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly2, 3]
-
-        elif (board.grid_pos[0] == 16 or board.grid_pos[0] == 15) and board.grid_pos[1] == 0:  # draw left iso_poly1
-            coords1 = board.iso_poly1[1]
-            rx, ry = coords1
-            if ((mx > rx) or (mx < rx - warn_width - 200) or (my > ry + 53) or (my < ry - 53)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = -34, -warn_width - 195
-            warn_rect = [screen, (103, 0, 0), (rx - 200 - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width - 200, ry - 50, 200 + warn_width, 100), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
-
-        else:  # iso_poly1
-            coords1 = board.iso_poly1[1]
-            rx, ry = coords1
-            if ((mx > rx + warn_width) or (mx < rx - 200) or (my > ry + 53) or (my < ry - 53)):
-                if not error:
-                    warn = False
-
-            ry_c, rx_c = - 34, 5
-            warn_rect = [screen, (103, 0, 0), (rx, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
-            pygame.draw.rect(screen, (255, 0, 0), (rx - 200, ry - 50, 200 + warn_width, 100), 1)
-            warn_polygon = [screen, warn_color, board.iso_poly1, 3]
-
-    draw_sprites()
-    show_info(pygame.mouse.get_pos(), screen)
-
-    res_values = [str(round(food)), str(round(wood)), str(round(stone)), str(round(iron)), str(round(gold)),
-                  str(round(science)), str(round(population)), str(round(happiness)) + '%', str(round(days))]
-    coords = 80
-    font = pygame.font.SysFont('arial', 40)
-
-    if len(warn_rect) != 0:
-        draw_rect(warn_rect)
-    if len(warn_polygon) != 0:
-        draw_polygon(warn_polygon)
-
-    castle_sprites.draw(screen)
-    menu.show_list()
-
-    for event in pygame.event.get():
-
-        if event.type == pygame.QUIT or event.type == pygame.K_ESCAPE:
+        if finish:
+            print('finish')
             terminate()
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+        if menu.ok:
+            draw_polygon([screen, (255, 255, 255), board.iso_poly1, 3])
+            draw_polygon([screen, (255, 255, 255), board.iso_poly2, 3])
+
+        if not warn and not menu.ok:
+            if draw_board_ok:
+                draw_board()
+
+        if warn:
+            info = [warn_word]
+
+            if board.grid_pos in buildings and can_build == False:
+                info = ["Сейчас строится здание, подождите!"]
+            # elif board.grid_pos in buildings and can_build == True:
+            #     info = ["На этом месте уже стоит постройка!"]
+
+            if info[0] == "Сейчас строится здание, подождите!":
+                warn_width = 350
+            elif info[0] == "На этом месте уже стоит постройка!":
+                warn_width = 350
+            elif info[0] == "Вы не можете строить здание на этой территории!":
+                warn_width = 480
+            elif info[0] == "Вы не можете строить рудники не в горах!":
+                warn_width = 400
+            elif info[0] == "Вы не можете строить ферму в горах!":
+                warn_width = 360
+            elif info[0] == "У вас недостаточно ресурсов для строительства!":
+                warn_width = 470
+
+            mx, my = pygame.mouse.get_pos()
+
+            if board.grid_pos[1] < 0 and not ((board.grid_pos[0] == 1 or board.grid_pos[0] == 0 or board.grid_pos[0] == 2
+                                               or board.grid_pos[0] == 3) and board.grid_pos[1] == -1) and not \
+                    ((board.grid_pos[0] == 3 or board.grid_pos[0] == 2) and board.grid_pos[1] == -2) and not \
+                    ((board.grid_pos[0] == 4 or board.grid_pos[0] == 3) and board.grid_pos[1] == -3) and not \
+                    ((board.grid_pos[0] == 4 or board.grid_pos[0] == 3 or board.grid_pos[0] == 5) and
+                     board.grid_pos[1] == -4) and not ((board.grid_pos[0] == 5 or board.grid_pos[0] == 6) and
+                                                       board.grid_pos[1] == -5) and not (
+                    (board.grid_pos[0] == 7 or board.grid_pos[0] == 6) and
+                    board.grid_pos[1] == -6) and not ((board.grid_pos[0] == 7 or board.grid_pos[0] == 8) and
+                                                      board.grid_pos[1] == -7) and not (
+                    (board.grid_pos[0] == 8 or board.grid_pos[0] == 9) and
+                    board.grid_pos[1] == -8) and not ((board.grid_pos[0] == 10 or board.grid_pos[0] == 9) and
+                                                      board.grid_pos[1] == -9):  # iso_poly2
+                coords1 = board.iso_poly2[3]
+                rx, ry = coords1
+                if ((mx > rx + 200) or (mx < rx - warn_width) or (my > ry + 53) or (my < ry - 53)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = -34, 5 - warn_width
+                warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 50, 200 + warn_width, 100), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif board.grid_pos[0] == 3 and board.grid_pos[1] == -1:
+                coords1 = board.iso_poly2[3]
+                rx, ry = coords1
+                if ((mx > rx + warn_width + 200) or (mx < rx) or (my > ry + 53) or (my < ry - 53)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = -34, 205
+                warn_rect = [screen, (103, 0, 0), (rx + 200, ry - 35, warn_width, 35), ry, rx, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx, ry - 50, 200 + warn_width, 100), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 17 and board.grid_pos[1] <= 3) or \
+                    (board.grid_pos[0] == 18 and board.grid_pos[1] <= 3) or \
+                    (board.grid_pos[0] == 19 and board.grid_pos[1] <= 3) or \
+                    (board.grid_pos[0] == 20 and board.grid_pos[1] <= 3) or \
+                    (board.grid_pos[0] == 11 and board.grid_pos[1] == 3):
+                coords1 = board.iso_poly1[3]
+                rx, ry = coords1
+                if ((mx > rx + 200) or (mx < rx - warn_width) or (my > ry + 53) or (my < ry - 53)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = -34, 5 - warn_width
+                warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 50, 200 + warn_width, 100), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+            elif ((board.grid_pos[0] == 0 or board.grid_pos[0] == 1) and board.grid_pos[1] == 0) or \
+                    (board.grid_pos[0] == 1 and board.grid_pos[1] == 1):  # draw right down iso_poly1
+                coords1 = board.iso_poly1[0]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 123) or (my < ry)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 105, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry + 100, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry, warn_width + 100, 135), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+            elif board.grid_pos[0] == 2 and (board.grid_pos[1] == 1 or board.grid_pos[1] == 2):
+                coords1 = board.iso_poly1[0]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 123) or (my < ry)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 105, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry + 100, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry, warn_width + 100, 135), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+            elif (board.grid_pos[0] == 1 or board.grid_pos[0] == 0 or board.grid_pos[0] == 2) \
+                    and (board.grid_pos[1] == -1):  # right iso_poly2
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 2 or board.grid_pos[0] == 3) and board.grid_pos[1] == -2:
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 3 or board.grid_pos[0] == 4) and board.grid_pos[1] == -3:
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 3 or board.grid_pos[0] == 4 or board.grid_pos[0] == 5) and board.grid_pos[1] == -4:
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 5 or board.grid_pos[0] == 6) and board.grid_pos[1] == -5:
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 7 or board.grid_pos[0] == 6) and board.grid_pos[1] == -6:
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 8 or board.grid_pos[0] == 7) and board.grid_pos[1] == -7:
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 100) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 100, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 8 or board.grid_pos[0] == 9) and board.grid_pos[1] == -8:
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + 100) or (mx < rx - warn_width) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, -warn_width
+                warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 10 or board.grid_pos[0] == 9) and board.grid_pos[1] == -9:
+                coords1 = board.iso_poly2[2]
+                rx, ry = coords1
+                if ((mx > rx + 100) or (mx < rx - warn_width) or (my > ry + 34) or (my < ry - 83)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = 8, -warn_width
+                warn_rect = [screen, (103, 0, 0), (rx - warn_width, ry, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width, ry - 100, warn_width + 102, 136), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly2, 3]
+
+            elif (board.grid_pos[0] == 16 or board.grid_pos[0] == 15) and board.grid_pos[1] == 0:  # draw left iso_poly1
+                coords1 = board.iso_poly1[1]
+                rx, ry = coords1
+                if ((mx > rx) or (mx < rx - warn_width - 200) or (my > ry + 53) or (my < ry - 53)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = -34, -warn_width - 195
+                warn_rect = [screen, (103, 0, 0), (rx - 200 - warn_width, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - warn_width - 200, ry - 50, 200 + warn_width, 100), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+            else:  # iso_poly1
+                coords1 = board.iso_poly1[1]
+                rx, ry = coords1
+                if ((mx > rx + warn_width) or (mx < rx - 200) or (my > ry + 53) or (my < ry - 53)):
+                    if not error:
+                        warn = False
+
+                ry_c, rx_c = - 34, 5
+                warn_rect = [screen, (103, 0, 0), (rx, ry - 35, warn_width, 35), rx, ry, ry_c, rx_c]
+                # pygame.draw.rect(screen, (255, 0, 0), (rx - 200, ry - 50, 200 + warn_width, 100), 1)
+                warn_polygon = [screen, warn_color, board.iso_poly1, 3]
+
+        draw_sprites()
+        show_info(pygame.mouse.get_pos(), screen)
+
+        res_values = [str(round(food)), str(round(wood)), str(round(stone)), str(round(iron)), str(round(gold)),
+                      str(round(science)), str(round(population)), str(round(happiness)) + '%', str(round(days))]
+        coords = 80
+        font = pygame.font.SysFont('arial', 40)
+
+        if len(warn_rect) != 0:
+            draw_rect(warn_rect)
+        if len(warn_polygon) != 0:
+            draw_polygon(warn_polygon)
+
+        castle_sprites.draw(screen)
+        menu.show_list()
+
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
                 terminate()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                if grids[board.grid_pos]:
-                    if can_build:
-                        if board.grid_pos == (17, 0) or board.grid_pos == (18, 0) or \
-                                board.grid_pos == (19, 1) or board.grid_pos == (18, 1):
-                            cord = board.iso_poly1[3]
-                            x1 = cord[0] - 200
-                            y1 = cord[1]
-                            lx = board.iso_poly1[1][0]
-                            ly = board.iso_poly1[1][1]
-                            stayx = x1 + 245
-                            stayy = y1 - 50
-                            side = 2
-                            if y1 >= 540:
-                                y1 -= 300
-                            else:
-                                y1 -= 50
-                                ly += 250
-                            menu = BuildMenu(screen, x1, y1, lx, ly, 2, stayx, stayy)
-                        elif board.grid_pos[1] >= 0:
-                            cord = board.iso_poly1[1]
-                            x1 = cord[0]
-                            y1 = cord[1]
-                            lx = board.iso_poly1[3][0]
-                            ly = board.iso_poly1[3][1]
-                            stayx = lx + 45
-                            stayy = ly - 50
-                            side = 1
-                            if y1 >= 540:
-                                y1 -= 300
-                            else:
-                                y1 -= 50
-                                ly += 250
-                            menu = BuildMenu(screen, x1, y1, lx, ly, 1, stayx, stayy)
-                        elif board.grid_pos[1] < 0:
-                            cord = board.iso_poly2[3]
-                            x1 = cord[0] - 200
-                            y1 = cord[1]
-                            lx = board.iso_poly2[1][0]
-                            ly = board.iso_poly2[1][1]
-                            stayx = x1 + 245
-                            stayy = y1 - 50
-                            side = 2
-                            if y1 >= 540:
-                                y1 -= 300
-                            else:
-                                y1 -= 50
-                                ly += 250
-                            menu = BuildMenu(screen, x1, y1, lx, ly, 2, stayx, stayy)
-                        menu.ok = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    # fade(1920, 1080)
+                    # terminate()
+                    pause_cycle = True
 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if grids[board.grid_pos]:
+                        if can_build:
+                            if board.grid_pos == (17, 0) or board.grid_pos == (18, 0) or \
+                                    board.grid_pos == (19, 1) or board.grid_pos == (18, 1):
+                                cord = board.iso_poly1[3]
+                                x1 = cord[0] - 200
+                                y1 = cord[1]
+                                lx = board.iso_poly1[1][0]
+                                ly = board.iso_poly1[1][1]
+                                stayx = x1 + 245
+                                stayy = y1 - 50
+                                side = 2
+                                if y1 >= 540:
+                                    y1 -= 300
+                                else:
+                                    y1 -= 50
+                                    ly += 250
+                                menu = BuildMenu(screen, x1, y1, lx, ly, 2, stayx, stayy)
+                            elif board.grid_pos[1] >= 0:
+                                cord = board.iso_poly1[1]
+                                x1 = cord[0]
+                                y1 = cord[1]
+                                lx = board.iso_poly1[3][0]
+                                ly = board.iso_poly1[3][1]
+                                stayx = lx + 45
+                                stayy = ly - 50
+                                side = 1
+                                if y1 >= 540:
+                                    y1 -= 300
+                                else:
+                                    y1 -= 50
+                                    ly += 250
+                                menu = BuildMenu(screen, x1, y1, lx, ly, 1, stayx, stayy)
+                            elif board.grid_pos[1] < 0:
+                                cord = board.iso_poly2[3]
+                                x1 = cord[0] - 200
+                                y1 = cord[1]
+                                lx = board.iso_poly2[1][0]
+                                ly = board.iso_poly2[1][1]
+                                stayx = x1 + 245
+                                stayy = y1 - 50
+                                side = 2
+                                if y1 >= 540:
+                                    y1 -= 300
+                                else:
+                                    y1 -= 50
+                                    ly += 250
+                                menu = BuildMenu(screen, x1, y1, lx, ly, 2, stayx, stayy)
+                            menu.ok = True
+
+                        else:
+                            warn_word = "Сейчас строится здание, подождите!"
+                            warn = True
                     else:
-                        warn_word = "Сейчас строится здание, подождите!"
+                        warn_word = "Вы не можете строить здание на этой территории!"
                         warn = True
-                else:
-                    warn_word = "Вы не можете строить здание на этой территории!"
-                    warn = True
 
-            elif event.button == 3:
-                saveGame()
+            if event.type == type_farm:
+                if farm.n == 1:
+                    foodplus += 10
+                    can_build = True
+                farm.update()
 
-        if event.type == type_farm:
-            if farm.n == 1:
-                foodplus += 10
-                can_build = True
-            farm.update()
+            if event.type == type_mill:
+                if mill.n == 1:
+                    woodplus += 10
+                    can_build = True
+                mill.update()
 
-        if event.type == type_mill:
-            if mill.n == 1:
-                woodplus += 10
-                can_build = True
-            mill.update()
+            if event.type == type_quarry:
+                if quarry.n == 1:
+                    stoneplus += 10
+                    can_build = True
+                quarry.update()
 
-        if event.type == type_quarry:
-            if quarry.n == 1:
-                stoneplus += 10
-                can_build = True
-            quarry.update()
+            if event.type == type_barracks:
+                if barracks.n == 1:
+                    is_army = True
+                    army += 100
+                    army_level += 1
+                    can_build = True
+                barracks.update()
 
-        if event.type == type_barracks:
-            if barracks.n == 1:
-                is_army = True
-                army += 100
-                army_level += 1
-                can_build = True
-            barracks.update()
+            if event.type == type_university:
+                if university.n == 1:
+                    scienceplus += 5
+                    can_build = True
+                university.update()
 
-        if event.type == type_university:
-            if university.n == 1:
-                scienceplus += 5
-                can_build = True
-            university.update()
+            if event.type == type_ironmine:
+                if ironmine.n == 1:
+                    ironplus += 10
+                    can_build = True
+                ironmine.update()
 
-        if event.type == type_ironmine:
-            if ironmine.n == 1:
-                ironplus += 10
-                can_build = True
-            ironmine.update()
+            if event.type == type_goldmine:
+                if goldmine.n == 1:
+                    goldplus += 10
+                    can_build = True
+                goldmine.update()
 
-        if event.type == type_goldmine:
-            if goldmine.n == 1:
-                goldplus += 10
-                can_build = True
-            goldmine.update()
+            if event.type == type_village:
+                if village.n == 1:
+                    can_build = True
+                village.update()
 
-        if event.type == type_res:
-            food += foodplus
-            wood += woodplus
-            iron += ironplus
-            stone += stoneplus
-            gold += goldplus
-            science += scienceplus
-            global_changes()
+            if event.type == type_res:
+                food += foodplus
+                wood += woodplus
+                iron += ironplus
+                stone += stoneplus
+                gold += goldplus
+                science += scienceplus
+                global_changes()
 
-        if event.type == type_village:
-            if village.n == 1:
-                limit += 500
-                can_build = True
-            village.update()
+            if event.type == type_days:
+                days += 1
 
-        if event.type == type_days:
-            days += 1
+            if event.type == type_event:
+                Revolt(chance_revolt)
+                Raids(chance_raid)
 
-        if event.type == type_event:
-            Revolt(chance_revolt)
-            Raids(chance_raid)
+            if event.type == type_castle:
+                castle.update()
 
-        if event.type == type_castle:
-            castle.update()
+            if event.type == type_error:
+                error = False
 
-        if event.type == type_error:
-            error = False
+        for i in range(0, len(resourses)):
+            screen.blit(resourses[i], (x, y))
+            if i != len(resourses) - 1:
+                pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 150, 50), 1)
+                pygame.draw.rect(screen, (47, 27, 0), (x + 51, y + 1, 198, 48), 1)
+                pygame.draw.rect(screen, (103, 0, 0), (x + 52, y + 2, 196, 46))
+            x += 200
 
-    for i in range(0, len(resourses)):
-        screen.blit(resourses[i], (x, y))
-        if i != len(resourses) - 1:
-            pygame.draw.rect(screen, (37, 23, 5), (x + 50, y, 150, 50), 1)
-            pygame.draw.rect(screen, (47, 27, 0), (x + 51, y + 1, 198, 48), 1)
-            pygame.draw.rect(screen, (103, 0, 0), (x + 52, y + 2, 196, 46))
-        x += 200
+        for i in res_values:
+            string_rendered = font.render(i, True, (255, 255, 255))
+            intro_rect = string_rendered.get_rect()
+            intro_rect.top = 10
+            intro_rect.x = coords
+            coords += 152
+            coords += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
 
-    for i in res_values:
-        string_rendered = font.render(i, True, (255, 255, 255))
-        intro_rect = string_rendered.get_rect()
-        intro_rect.top = 10
-        intro_rect.x = coords
-        coords += 152
-        coords += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        if pygame.mouse.get_focused():
+            screen.blit(mouse, cursor_rect)
 
-    pygame.display.flip()
-    clock.tick(FPS)
+        if pygame.mouse.get_pressed()[0]:
+            screen.blit(mouse1, cursor_rect)
 
+        pygame.display.flip()
+        clock.tick(FPS)
+
+    elif pause_cycle:
+        resourses[-1] = load_image('play.png')
+        count1 = 0
+        pausemenu = PauseMenu1(load_image('pausemenu.png'), 10, 1, 465, 300, pausemenu_sprites, type_pausemenu)
+        pygame.time.set_timer(type_pausemenu, 100)
+        quitbutton = QuitButton((600, 670), butHeigth=50, butWidth=250, text='Выход из игры')
+        quitmenubutton = QuitMenuButton((600, 570), butHeigth=50, butWidth=250, text='Выход в меню')
+        savebutton = SaveButton((600, 470), butHeigth=50, butWidth=250, text='Сохранение')
+        contbutton = ContButton((600, 370), butHeigth=50, butWidth=250, text='Продолжить')
+
+        while pause_cycle:
+            cursor_rect.center = pygame.mouse.get_pos()
+            redrawWindow()
+
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pause1_cycle = True
+                        pause_cycle = False
+
+                if event.type == type_pausemenu:
+                    count1 += event.type
+                    pausemenu.update()
+
+            pausemenu_sprites.draw(screen)
+
+            if count1 >= 328500:
+                quitbutton.render(screen)
+                quitmenubutton.render(screen)
+                savebutton.render(screen)
+                contbutton.render(screen)
+
+            if pygame.mouse.get_focused():
+                screen.blit(mouse, cursor_rect)
+
+            if pygame.mouse.get_pressed()[0]:
+                screen.blit(mouse1, cursor_rect)
+
+            pygame.display.flip()
+            clock.tick(FPS)
+
+    elif pause1_cycle:
+
+        pausemenu2 = PauseMenu2(load_image('pausemenu.png'), 10, 1, 465, 300, pausemenu_sprites, type_pausemenu)
+        pygame.time.set_timer(type_pausemenu, 100)
+        # pygame.time.set_timer(type_endpause, 1000)
+        count = 0
+        pausemenu.kill()
+
+        while pause1_cycle:
+            cursor_rect.center = pygame.mouse.get_pos()
+
+            redrawWindow()
+
+            for event in pygame.event.get():
+
+                if event.type == type_pausemenu:
+                    count += event.type
+                    pausemenu2.update()
+
+            if count >= 328500:
+                pausemenu2.kill()
+                resourses[-1] = load_image('pause.png')
+                pause1_cycle = False
+                pause_cycle = False
+
+            pausemenu_sprites.draw(screen)
+
+            if pygame.mouse.get_focused():
+                screen.blit(mouse, cursor_rect)
+
+            if pygame.mouse.get_pressed()[0]:
+                screen.blit(mouse1, cursor_rect)
+
+            pygame.display.flip()
+            clock.tick(FPS)
