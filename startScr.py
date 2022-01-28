@@ -1,11 +1,9 @@
 import pygame
 import os
-import sys
 from SETTINGS import *
 
 pygame.init()
 clock = pygame.time.Clock()
-start = True
 start1 = True
 n = 0
 
@@ -61,11 +59,12 @@ class ConButton(StartButton):
             pygame.draw.rect(screen, (90, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
                 pygame.draw.rect(screen, (51, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
-                global start, food, foodplus, wood, woodplus, stone, stonplus, gold, goldplus, iron, ironres,\
-                    population, populationplus, science, scienceplus, happiness, limit, days,\
+                global start, food, foodplus, wood, woodplus, stone, stonplus, gold, goldplus, iron, ironres, \
+                    population, populationplus, science, scienceplus, happiness, limit, days, \
                     structures_save, structures
                 result = cur.execute('''SELECT * FROM Buildings''').fetchall()
                 for elem in result:
+                    grids[(elem[4], elem[5])] = False
                     structures_save[(elem[4], elem[5])] = (elem[1], elem[2], elem[3], (elem[4], elem[5]))
                 start = False
         else:
@@ -93,6 +92,7 @@ class BackButton(StartButton):
                 pygame.draw.rect(screen, (51, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
                 global start1
                 start1 = False
+
         else:
             pygame.draw.rect(screen, (122, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
         self.font = pygame.font.Font(pygame.font.get_default_font(), 30)
@@ -136,34 +136,54 @@ class DescriptionButton(StartButton):
                 start1 = True
                 scr1 = pygame.display.set_mode(siz1)
                 fon1 = pygame.transform.scale(load_image('fon.png'), (siz1[0], siz1[1]))
-                scr1.blit(fon1, (0, 0))
-                for line in intro_text:
-                    if line[-1] == '!':
-                        line = line.rstrip('!')
-                        string_rendered = font.render(line, 1, (125, 0, 0))
-                        intro_rect = string_rendered.get_rect()
-                        text_coord += 10
-                        intro_rect.top = text_coord
-                        intro_rect.x = 150
-                        text_coord += intro_rect.height
-                        scr1.blit(string_rendered, intro_rect)
-                    else:
-                        string_rendered = font.render(line, 1, (102, 0, 0))
-                        intro_rect = string_rendered.get_rect()
-                        text_coord += 10
-                        intro_rect.top = text_coord
-                        intro_rect.x = 100
-                        text_coord += intro_rect.height
-                        scr1.blit(string_rendered, intro_rect)
+
                 btn_start1 = StartButton((100, 475), butHeigth=100, butWidth=200, text='К игре!')
                 btn_back = BackButton((400, 475), butHeigth=100, butWidth=200, text='На главную.')
+                scr1.blit(fon1, (0, 0))
+
                 while start1:
+                    scr1.blit(fon1, (0, 0))
+
+                    for line in intro_text:
+                        if text_coord < 425:
+                            if line[-1] == '!':
+                                line = line.rstrip('!')
+                                string_rendered = font.render(line, 1, (125, 0, 0))
+                                intro_rect = string_rendered.get_rect()
+                                text_coord += 10
+                                intro_rect.top = text_coord
+                                intro_rect.x = 150
+                                text_coord += intro_rect.height
+                                scr1.blit(string_rendered, intro_rect)
+                            else:
+                                string_rendered = font.render(line, 1, (102, 0, 0))
+                                intro_rect = string_rendered.get_rect()
+                                text_coord += 10
+                                intro_rect.top = text_coord
+                                intro_rect.x = 100
+                                text_coord += intro_rect.height
+                                scr1.blit(string_rendered, intro_rect)
+
+                    cursor_rect.center = pygame.mouse.get_pos()
+
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
                             terminate()
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_ESCAPE:
+                                start1 = False
                     btn_start1.render(scr1)
                     btn_back.render(scr1)
+
+                    if pygame.mouse.get_focused():
+                        scr1.blit(mouse, cursor_rect)
+
+                    if pygame.mouse.get_pressed()[0]:
+                        scr1.blit(mouse1, cursor_rect)
+
+                    text_coord = 25
                     pygame.display.flip()
+                    clock.tick(FPS)
         else:
             pygame.draw.rect(screen, (122, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
         self.font = pygame.font.Font(pygame.font.get_default_font(), 30)
@@ -171,15 +191,6 @@ class DescriptionButton(StartButton):
         textx = self.position[0] + (self.width / 2) - (valueSurf.get_rect().width / 2)
         texty = self.position[1] + (self.heigth / 2) - (valueSurf.get_rect().height / 2)
         screen.blit(valueSurf, (textx, texty))
-
-
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data/images', name)
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
-    image = pygame.image.load(fullname)
-    return image
 
 
 def terminate():
@@ -190,8 +201,8 @@ def start_screen():
     global maxdays
     intro_text = ['Проект утопия', 'Максимально прожито дней:', str(maxdays)]
     size = WIDTH, HEIGHT = 900, 600
-    screen = pygame.display.set_mode(size)
-    fon = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT))
+    screen1 = pygame.display.set_mode(size)
+    fon1 = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT))
     pygame.font.get_fonts()
     font = pygame.font.SysFont('arial', 80)
     font1 = pygame.font.SysFont('arial', 30)
@@ -200,34 +211,45 @@ def start_screen():
     intro_rect = string_rendered.get_rect()
     intro_rect.top = text_coord
     intro_rect.x = 100
-    screen.blit(string_rendered, intro_rect)
+    text_coord += intro_rect.height
+
+    screen1.blit(string_rendered, intro_rect)
     text_coord = 200
     string_rendered2 = font1.render(intro_text[1], 1, (103, 0, 0))
     intro_rect2 = string_rendered2.get_rect()
     intro_rect2.top = text_coord
     intro_rect2.x = 375
-    screen.blit(string_rendered2, intro_rect2)
+    screen1.blit(string_rendered2, intro_rect2)
     string_rendered1 = font1.render(intro_text[2], 1, (103, 0, 0))
     intro_rect1 = string_rendered1.get_rect()
     intro_rect1.top = text_coord
-    intro_rect1.x = 750
-    screen.blit(string_rendered, intro_rect1)
-    btn_start = StartButton((100, 200), butHeigth=50, butWidth=250, text='Старт')
+    intro_rect1.x = 785
+    screen1.blit(string_rendered, intro_rect1)
+
+    btn_start = StartButton((100, 200), butHeigth=50, butWidth=250, text='Новая игра')
     btn_continue = ConButton((100, 500), butHeigth=50, butWidth=250, text='Продолжить')
     btn_desc = DescriptionButton((100, 350), butHeigth=50, butWidth=250, text='Описание')
     # btn_settings = Button((100, 550), butHeigth=100, butWidth=400, text='Настройки')
-    global start
+
+    # global start
     while start:
+        cursor_rect.center = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-        screen.blit(fon, (0, 0))
-        screen.blit(string_rendered, intro_rect)
-        screen.blit(string_rendered1, intro_rect1)
-        screen.blit(string_rendered2, intro_rect2)
-        btn_start.render(screen)
-        btn_continue.render(screen)
-        btn_desc.render(screen)
+        screen1.blit(fon1, (0, 0))
+        screen1.blit(string_rendered, intro_rect)
+        screen1.blit(string_rendered1, intro_rect1)
+        screen1.blit(string_rendered2, intro_rect2)
+        btn_start.render(screen1)
+        btn_continue.render(screen1)
+        btn_desc.render(screen1)
+
+        if pygame.mouse.get_focused():
+            screen1.blit(mouse, cursor_rect)
+
+        if pygame.mouse.get_pressed()[0]:
+            screen1.blit(mouse1, cursor_rect)
         # btn_settings.render(screen)
         pygame.display.flip()
         clock.tick(FPS)
