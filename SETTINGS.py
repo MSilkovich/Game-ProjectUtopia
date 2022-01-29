@@ -22,6 +22,9 @@ type_error = pg.USEREVENT
 type_event = pg.USEREVENT
 type_pausemenu = pg.USEREVENT
 type_endpause = pg.USEREVENT
+type_test_finish = pg.USEREVENT + 13
+type_king = pg.USEREVENT + 14
+type1_king = pg.USEREVENT + 15
 
 grids = {(12, 4): True, (4, 0): True, (8, -9): False, (5, 1): True, (8, 0): True, (10, -3): True, (19, 0): False,
          (11, -4): True, (17, 3): True, (10, 6): True, (9, 8): False, (11, 5): True, (2, 2): False, (15, -4): False,
@@ -91,14 +94,13 @@ def terminate():
     sys.exit()
 
 
-pause_cycle, pause1_cycle, cont = False, False, False
-
-start = True
+pause_cycle, pause1_cycle, cont, finish_cycle = False, False, False, False
 
 mountains = [(10, 10), (10, 9), (10, 8), (11, 10), (11, 9), (11, 8), (12, 9), (12, 8), (12, 7), (13, 8), (13, 7),
              (13, 6), (14, 6), (14, 7)]
 
-can_build, is_army, army_height, army_width, info_army, army_level, finish = True, False, 40, 400, [], 0, False
+can_build, is_army, army_height, army_width, info_army, army_level, finish, cause = True, False, 40, 400, \
+                                                                                    [], 0, False, ""
 
 mouse, mouse1 = load_image('cursor.png'), load_image('cursor1.png')
 cursor_rect = mouse.get_rect()
