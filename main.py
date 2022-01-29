@@ -1,6 +1,6 @@
 import pygame.sprite
 
-from startScr import start_screen
+from startScr import start_screen, start
 from Board import Board
 from Buildings import *
 import random
@@ -15,6 +15,7 @@ structures = []
 all_sprites = pygame.sprite.Group()
 castle_sprites = pygame.sprite.Group()
 pausemenu_sprites = pygame.sprite.Group()
+king_sprites = pygame.sprite.Group()
 
 running = True
 
@@ -76,9 +77,6 @@ def draw_rect(spis):
 def saveGame():
     global structures_save, days, maxdays
     limit1 = limit
-
-    if days > maxdays:
-        cur.execute(f"""UPDATE maxdays SET maxdays = {days} WHERE id = 1""")
 
     cur.execute(f"""DELETE FROM Buildings 
             WHERE id > 1""")
@@ -321,9 +319,10 @@ class Revolt:
         self.chanse = chanse
         self.revolt = random.randint(0, 100)
         if self.revolt < self.chanse:
-            global structures, foodplus, woodplus, stoneplus, ironplus, grids, scienceplus, goldplus, finish
+            global structures, foodplus, woodplus, stoneplus, ironplus, grids, scienceplus, goldplus, finish, cause
             rem = random.randint(0, len(structures) - 1)
             if structures[rem][-1] == "castle":
+                cause = "бунт"
                 finish = True
             else:
                 structures[rem][0].kill()
@@ -349,7 +348,7 @@ class Raids:
         self.raid = random.randint(0, 100)
         if self.raid < self.chance:
             global structures, foodplus, woodplus, stoneplus, ironplus, grids, scienceplus, army_level, goldplus, \
-                finish, population, food, wood, stone, iron, science, gold
+                finish, population, food, wood, stone, iron, science, gold, cause
             chance_remove = random.randint(1, 10)
 
             if chance_remove > army_level:
@@ -357,6 +356,7 @@ class Raids:
                 for i in range(removing):
                     rem = random.randint(0, len(structures) - 1)
                     if structures[rem][-1] == "castle":
+                        cause = "набег"
                         finish = True
                     else:
                         res_minus = removing * 0.1
@@ -387,6 +387,7 @@ class Raids:
             elif chance_remove == army_level:
                 rem = random.randint(0, len(structures) - 1)
                 if structures[rem][-1] == "castle":
+                    cause = "набег"
                     finish = True
                 else:
                     food -= food * 0.1
@@ -580,7 +581,7 @@ class BuildVillage(BUildFarm):
         if self.mouse_in(mousePos):
             pygame.draw.rect(screen, (103, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
-                global village, food, wood, type_village, can_build, grids, board, stone, gold, limit,warn, error, warn_word
+                global village, food, wood, type_village, can_build, grids, board, stone, gold, limit
                 if food >= 100 and wood >= 100 and stone >= 50 and gold >= 20:
                     village = Build(load_image('village.png'), 3, 1, self.pos[0], self.pos[1], all_sprites,
                                     type_village)
@@ -595,11 +596,6 @@ class BuildVillage(BUildFarm):
                     grids[board.grid_pos] = False
                     structures.append((village, self.pos[0], self.pos[1], self.cell, 'village'))
                     structures_save[self.cell] = ('village', self.pos[0], self.pos[1], self.cell)
-                else:
-                    pygame.time.set_timer(type_error, 3000)
-                    warn_word = "У вас недостаточно ресурсов для строительства!"
-                    menu.ok = False
-                    warn, error = True, True
         else:
             pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
 
@@ -649,7 +645,7 @@ class BuildBarracks(BUildFarm):
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
                 global barracks, food, wood, type_barracks, can_build, grids, board, warn, warn_word, error
                 if food >= 300 and wood >= 225:
-                    barracks = Build(load_image('barracks.png'), 3, 1, self.pos[0], self.pos[1] - 30, all_sprites,
+                    barracks = Build(load_image('barracks_3.png'), 3, 1, self.pos[0], self.pos[1] - 30, all_sprites,
                                      type_barracks)
                     pygame.time.set_timer(type_barracks, 7000)
                     menu.ok = False
@@ -985,7 +981,7 @@ for i in structures_save:
 board = Board(20, 20)
 # board.set_view(0, 0, 100)
 
-pygame.time.set_timer(type_res, 10000)
+pygame.time.set_timer(type_res, 20000)
 pygame.time.set_timer(type_days, 30000)
 
 menu = BuildMenu(screen, 0, 0, 0, 0, 0, 0, 0)
@@ -993,18 +989,20 @@ farm = Build(load_image('farm_3.png'), 3, 1, -300, -300, all_sprites, type_farm)
 mill = Build(load_image('mill.png'), 3, 1, -300, -300, all_sprites, type_mill)
 ironmine = Build(load_image('ironmine.png'), 3, 1, -300, -300, all_sprites, type_ironmine)
 quarry = Build(load_image('quarry.png'), 3, 1, -300, -300, all_sprites, type_quarry)
-barracks = Build(load_image('barracks.png'), 3, 1, -300, -300, all_sprites, type_barracks)
+barracks = Build(load_image('barracks_3.png'), 3, 1, -300, -300, all_sprites, type_barracks)
 university = Build(load_image('university.png'), 3, 1, -300, -300, all_sprites, type_university)
 castle = Castle_cl(load_image('castle_anim2.png'), 5, 1, 960, 650, castle_sprites)
 goldmine = Build(load_image('goldmine1.png'), 3, 1, -300, -300, all_sprites, type_goldmine)
 village = Build(load_image('village.png'), 3, 1, -300, -300, all_sprites, type_village)
 structures.append((castle, 960, 650, (12, 2), 'castle'))
+
+pygame.time.set_timer(type_test_finish, 2000)
 pygame.time.set_timer(type_event, 20000)
 pygame.time.set_timer(type_castle, 150)
 
-pygame.mixer.music.load('data/music/witcher3.mp3')
-pygame.mixer.music.set_volume(0.1)
-pygame.mixer.music.play(-1)
+# pygame.mixer.music.load('data/music/witcher3.mp3')
+# pygame.mixer.music.set_volume(0.1)
+# pygame.mixer.music.play(-1)
 
 warn_width, warn_color, warn_word, farmcord, ironminecord, quarrycord, barrackscord = 340, (255, 0, 0), "", (0, 0), \
                                                                                       (0, 0), (0, 0), (0, 0)
@@ -1050,10 +1048,11 @@ class QuitMenuButton(QuitButton):
             pygame.draw.rect(screen, (90, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
             if pygame.mouse.get_pressed()[0] and self.mouse_in(mousePos):
                 pygame.draw.rect(screen, (51, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
-                global start, pause_cycle, pause1_cycle, running
+                global start, pause_cycle, pause1_cycle, running, s, finish_cycle
                 start = True
-                print(start)
-                pause1_cycle, pause_cycle = False, False
+                pause1_cycle, pause_cycle, finish_cycle = False, False, False
+                pausemenu.kill()
+                s = 1
                 start_screen()
         else:
             pygame.draw.rect(screen, (122, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
@@ -1146,20 +1145,81 @@ class Slider:
         return False
 
 
+def finished():
+    intro_text = ['Поражение!', 'Было прожито дней:', str(days), 'Причина поражения:', cause]
+    pygame.font.get_fonts()
+    font = pygame.font.SysFont('arial', 45)
+    font1 = pygame.font.SysFont('arial', 35)
+    text_coord = 360
+    string_rendered = font.render(intro_text[0], True, (103, 0, 0))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = text_coord
+    intro_rect.x = 825
+    text_coord += intro_rect.height
+    screen.blit(string_rendered, intro_rect)
 
+    text_coord = 415
+    string_rendered2 = font1.render(intro_text[1], True, (103, 0, 0))
+    intro_rect2 = string_rendered2.get_rect()
+    intro_rect2.top = text_coord
+    intro_rect2.x = 770
+    screen.blit(string_rendered2, intro_rect2)
 
+    text_coord = 415
+    string_rendered3 = font1.render(intro_text[2], True, (103, 0, 0))
+    intro_rect3 = string_rendered3.get_rect()
+    intro_rect3.top = text_coord
+    intro_rect3.x = 1110
+    screen.blit(string_rendered3, intro_rect3)
+
+    ir5x, text_coord4 = 1085, 740
+
+    if cause == "бунт":
+        ir5x = 1085
+    elif cause == "вымирание населения":
+        text_coord4 = 610
+        ir5x = 955
+    elif cause == "набег":
+        ir5x = 1085
+
+    text_coord = 460
+    string_rendered4 = font1.render(intro_text[3], True, (103, 0, 0))
+    intro_rect4 = string_rendered4.get_rect()
+    intro_rect4.top = text_coord
+    intro_rect4.x = text_coord4
+    screen.blit(string_rendered4, intro_rect4)
+
+    text_coord = 460
+    string_rendered5 = font1.render(intro_text[4], True, (103, 0, 0))
+    intro_rect5 = string_rendered5.get_rect()
+    intro_rect5.top = text_coord
+    intro_rect5.x = ir5x
+    screen.blit(string_rendered5, intro_rect5)
+
+s = WIDTH, HEIGHT = 1920, 1080
 while running:
     cursor_rect.center = pygame.mouse.get_pos()
+    from startScr import start
+    if not start and s == 0:
+        size = WIDTH, HEIGHT = 1920, 1080
+        screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
 
-    if not pause_cycle and not pause1_cycle:
+    if not pause_cycle and not pause1_cycle and not finish_cycle and not start:
+        s = 0
         x = 0
         warn_rect, warn_polygon = [], []
 
         update_bg()
 
+        if days > maxdays:
+            cur.execute(f"""UPDATE maxdays SET maxdays = {days} WHERE id = 1""")
+
+        if population < 0:
+            cause = "вымирание населения"
+            finish = True
+
         if finish:
-            print('finish')
-            terminate()
+            finish_cycle = True
 
         if menu.ok:
             draw_polygon([screen, (255, 255, 255), board.iso_poly1, 3])
@@ -1429,6 +1489,10 @@ while running:
                     # terminate()
                     pause_cycle = True
 
+            if event.type == type_test_finish:
+                cause = "вымирание населения"
+                finish = True
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if grids[board.grid_pos]:
@@ -1652,6 +1716,54 @@ while running:
                 pause_cycle = False
 
             pausemenu_sprites.draw(screen)
+
+            if pygame.mouse.get_focused():
+                screen.blit(mouse, cursor_rect)
+
+            if pygame.mouse.get_pressed()[0]:
+                screen.blit(mouse1, cursor_rect)
+
+            pygame.display.flip()
+            clock.tick(FPS)
+
+    elif finish_cycle:
+        resourses[-1] = load_image('play.png')
+        count1 = 0
+        set = True
+        king = King(load_image('king1.png'), 5, 1, 855, 475, king_sprites, type1_king)
+        pausemenu = PauseMenu1(load_image('pausemenu.png'), 10, 1, 465, 300, pausemenu_sprites, type_pausemenu)
+        quitmenubutton = QuitMenuButton((600, 670), butHeigth=50, butWidth=250, text='Выход в меню')
+        quitbutton = QuitButton((1065, 670), butHeigth=50, butWidth=250, text='Выход из игры')
+        pygame.time.set_timer(type_pausemenu, 100)
+
+
+        def set_func():
+            global set
+            pygame.time.set_timer(type1_king, 300)
+            set = False
+
+
+        while finish_cycle:
+            cursor_rect.center = pygame.mouse.get_pos()
+            redrawWindow()
+
+            for event in pygame.event.get():
+                if event.type == type_pausemenu:
+                    count1 += event.type
+                    pausemenu.update()
+
+                if event.type == type1_king:
+                    king.update()
+
+            pausemenu_sprites.draw(screen)
+
+            if count1 >= 328500:
+                finished()
+                if set:
+                    set_func()
+                king_sprites.draw(screen)
+                quitbutton.render(screen)
+                quitmenubutton.render(screen)
 
             if pygame.mouse.get_focused():
                 screen.blit(mouse, cursor_rect)
