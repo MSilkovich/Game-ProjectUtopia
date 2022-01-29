@@ -1,13 +1,18 @@
 import pygame
-import os
 from SETTINGS import *
+from Buildings import Castle_cl
 
 pygame.init()
 clock = pygame.time.Clock()
 start1 = True
+start = True
 n = 0
-
+king_sprites = pygame.sprite.Group()
+king = Castle_cl(load_image('king.png'), 5, 1, 470, 250, king_sprites)
 FPS = 60
+
+pygame.time.set_timer(type_king, 400)
+
 
 class StartButton:
     def __init__(self, position: tuple, butHeigth: int = 40, butWidth: int = 150, text: str = "Кнопка"):
@@ -36,6 +41,7 @@ class StartButton:
                 global start, start1
                 start = False
                 start1 = False
+                print(start, 3)
         else:
             pygame.draw.rect(screen, (122, 0, 0), (self.position[0], self.position[1], self.width, self.heigth))
         self.font = pygame.font.Font(pygame.font.get_default_font(), 30)
@@ -198,7 +204,7 @@ def terminate():
     sys.exit()
 
 def start_screen():
-    global maxdays
+    global maxdays, start
     intro_text = ['Проект утопия', 'Максимально прожито дней:', str(maxdays)]
     size = WIDTH, HEIGHT = 900, 600
     screen1 = pygame.display.set_mode(size)
@@ -232,11 +238,18 @@ def start_screen():
     # btn_settings = Button((100, 550), butHeigth=100, butWidth=400, text='Настройки')
 
     # global start
+    start = True
+    print(start, 1)
     while start:
         cursor_rect.center = pygame.mouse.get_pos()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+
+            if event.type == type_king:
+                king.update()
+
         screen1.blit(fon1, (0, 0))
         screen1.blit(string_rendered, intro_rect)
         screen1.blit(string_rendered1, intro_rect1)
@@ -244,6 +257,8 @@ def start_screen():
         btn_start.render(screen1)
         btn_continue.render(screen1)
         btn_desc.render(screen1)
+
+        king_sprites.draw(screen1)
 
         if pygame.mouse.get_focused():
             screen1.blit(mouse, cursor_rect)
