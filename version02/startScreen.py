@@ -1,13 +1,17 @@
 import pygame
-import os
 from SETTINGS import *
+from Buildings2 import Castle_cl
 
 pygame.init()
 clock = pygame.time.Clock()
 start1 = True
 n = 0
-
+king_sprites = pygame.sprite.Group()
+king = Castle_cl(load_image('king.png'), 5, 1, 470, 250, king_sprites)
 FPS = 60
+
+pygame.time.set_timer(type_king, 400)
+
 
 class StartButton:
     def __init__(self, position: tuple, butHeigth: int = 40, butWidth: int = 150, text: str = "Кнопка"):
@@ -234,9 +238,14 @@ def start_screen():
     # global start
     while start:
         cursor_rect.center = pygame.mouse.get_pos()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
+
+            if event.type == type_king:
+                king.update()
+
         screen1.blit(fon1, (0, 0))
         screen1.blit(string_rendered, intro_rect)
         screen1.blit(string_rendered1, intro_rect1)
@@ -244,6 +253,8 @@ def start_screen():
         btn_start.render(screen1)
         btn_continue.render(screen1)
         btn_desc.render(screen1)
+
+        king_sprites.draw(screen1)
 
         if pygame.mouse.get_focused():
             screen1.blit(mouse, cursor_rect)
