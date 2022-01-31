@@ -1000,9 +1000,9 @@ pygame.time.set_timer(type_test_finish, 2000)
 pygame.time.set_timer(type_event, 20000)
 pygame.time.set_timer(type_castle, 150)
 
-# pygame.mixer.music.load('data/music/witcher3.mp3')
-# pygame.mixer.music.set_volume(0.1)
-# pygame.mixer.music.play(-1)
+pygame.mixer.music.load('data/music/witcher3.mp3')
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play(-1)
 
 warn_width, warn_color, warn_word, farmcord, ironminecord, quarrycord, barrackscord = 340, (255, 0, 0), "", (0, 0), \
                                                                                       (0, 0), (0, 0), (0, 0)
