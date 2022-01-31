@@ -995,7 +995,7 @@ goldmine = Build(load_image('goldmine1.png'), 3, 1, -300, -300, all_sprites, typ
 village = Build(load_image('village.png'), 3, 1, -300, -300, all_sprites, type_village)
 structures.append((castle, 960, 650, (12, 2), 'castle'))
 
-pygame.time.set_timer(, 2000)
+# pygame.time.set_timer(, 2000)
 pygame.time.set_timer(type_event, 20000)
 pygame.time.set_timer(type_castle, 150)
 
