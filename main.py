@@ -979,7 +979,6 @@ for i in structures_save:
 
 
 board = Board(20, 20)
-# board.set_view(0, 0, 100)
 
 pygame.time.set_timer(type_res, 20000)
 pygame.time.set_timer(type_days, 30000)
@@ -996,7 +995,7 @@ goldmine = Build(load_image('goldmine1.png'), 3, 1, -300, -300, all_sprites, typ
 village = Build(load_image('village.png'), 3, 1, -300, -300, all_sprites, type_village)
 structures.append((castle, 960, 650, (12, 2), 'castle'))
 
-pygame.time.set_timer(type_test_finish, 2000)
+pygame.time.set_timer(, 2000)
 pygame.time.set_timer(type_event, 20000)
 pygame.time.set_timer(type_castle, 150)
 
@@ -1087,64 +1086,6 @@ class SaveButton(QuitButton):
         screen.blit(valueSurf, (textx, texty))
 
 
-class Slider:
-    def __init__(self, position: tuple, upperValue: int = 90, sliderWidth: int = 150,
-                 text: str = "Сергей Мульганов",
-                 outlineSize: tuple = (300, 30)) -> None:
-        self.position = position
-        self.outlineSize = outlineSize
-        self.text = text
-        self.sliderWidth = sliderWidth
-        self.upperValue = upperValue
-
-    # returns the current value of the slider
-    def getValue(self) -> float:
-        return self.sliderWidth / (self.outlineSize[0] / self.upperValue)
-
-    # renders slider and the text showing the value of the slider
-    def render(self, screen) -> None:
-        # draw outline and slider rectangles
-        pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1],
-                                             self.outlineSize[0], self.outlineSize[1]), 3)
-
-        pygame.draw.rect(screen, (0, 0, 0), (self.position[0], self.position[1],
-                                             self.sliderWidth, self.outlineSize[1]))
-
-        # determite size of font
-        self.font = pygame.font.Font(pygame.font.get_default_font(), 12)
-
-        # create text surface with value
-        valueSurf = self.font.render(f"{self.text}: {round(self.getValue())}", True, (255, 0, 0))
-
-        # centre text
-        textx = self.position[0] + (self.outlineSize[0] / 2) - (valueSurf.get_rect().width / 2)
-        texty = self.position[1] + (self.outlineSize[1] / 2) - (valueSurf.get_rect().height / 2)
-
-        screen.blit(valueSurf, (textx, texty))
-
-    # allows users to change value of the slider by dragging it.
-    def changeValue(self) -> None:
-        # If mouse is pressed and mouse is inside the slider
-        mousePos = pygame.mouse.get_pos()
-        if self.pointInRectanlge(mousePos):
-            if pygame.mouse.get_pressed()[0]:
-                # the size of the slider
-                self.sliderWidth = mousePos[0] - self.position[0]
-                # limit the size of the slider
-                if self.sliderWidth < 1:
-                    self.sliderWidth = 0
-                if self.sliderWidth > self.outlineSize[0]:
-                    self.sliderWidth = self.outlineSize[0]
-
-    def pointInRectanlge(self, p):
-        px, py = p
-        rw, rh, rx, ry = self.outlineSize[0], self.outlineSize[1], self.position[0], self.position[1]
-        if px > rx and px < rx + rw:
-            if py > ry and py < ry + rh:
-                return True
-        return False
-
-
 def finished():
     intro_text = ['Поражение!', 'Было прожито дней:', str(days), 'Причина поражения:', cause]
     pygame.font.get_fonts()
@@ -1196,7 +1137,9 @@ def finished():
     intro_rect5.x = ir5x
     screen.blit(string_rendered5, intro_rect5)
 
+    
 s = WIDTH, HEIGHT = 1920, 1080
+
 while running:
     cursor_rect.center = pygame.mouse.get_pos()
     from startScr import start
@@ -1489,9 +1432,9 @@ while running:
                     # terminate()
                     pause_cycle = True
 
-            if event.type == type_test_finish:
-                cause = "вымирание населения"
-                finish = True
+#             if event.type == type_test_finish:
+#                 cause = "вымирание населения"
+#                 finish = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
